@@ -1,1 +1,5 @@
-id,nombre,municipio,capacidad_t,costo_operacion,activa
+id,nombre,municipio,capacidad_t,costo_operacion,activa,lat,lon
+P01,Planta Villavicencio,Villavicencio,140,18000,true,4.142,-73.6266
+P02,Planta Restrepo,Restrepo,70,15500,true,4.2581,-73.5617
+P03,Planta Granada,Granada,120,16500,true,3.5467,-73.7064
+P04,Planta Puerto Gaitán,Puerto Gaitán,90,17200,true,4.3133,-72.0825

@@ -1,1 +1,11 @@
-id,nombre,municipio,tipo_residuo,oferta_t
+id,nombre,municipio,tipo_residuo,oferta_t,lat,lon
+A01,Agroindustrial El Morichal,Villavicencio,PALMA,42,4.142,-73.6266
+A02,Palmas del Ariari,Granada,PALMA,65,3.5467,-73.7064
+A03,Arrocera La Llanura,Puerto López,ARROZ,58,4.0839,-72.9564
+A04,Avícola San Martín,San Martín,GANADERIA,24,3.6963,-73.6992
+A05,Lácteos Cumaral,Cumaral,GANADERIA,18,4.2708,-73.4867
+A06,Porcícola Guamal,Guamal,GANADERIA,21,3.8803,-73.7656
+A07,Cítricos Acacías,Acacías,AGRICOLA,30,3.9878,-73.76
+A08,Palmar de Castilla,Castilla la Nueva,PALMA,47,3.8272,-73.6883
+A09,Arroz Puerto Gaitán,Puerto Gaitán,ARROZ,52,4.3133,-72.0825
+A10,Cacao Restrepo,Restrepo,AGRICOLA,16,4.2581,-73.5617

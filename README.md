@@ -115,10 +115,18 @@ streamlit run app.py                # http://localhost:8501
 
 Pruebas: `pytest` desde la carpeta `backend`.
 
+## Datos de prueba
+
+`backend/datos/semilla/` trae una red de ejemplo con 10 agroempresas y 4 plantas del Meta
+(373 t/semana de oferta y 420 t/semana de capacidad). Las coordenadas de los municipios son
+aproximadas y las distancias se estimaron como la distancia en línea recta por 1,3 (mínimo 5 km
+dentro del mismo municipio). La ruta Palmas del Ariari -> Planta Puerto Gaitán está bloqueada
+para probar el caso de Gran M. Hay que reemplazarlos por los datos reales del caso cuando estén.
+
 ## Avance
 
 - [x] Estructura de carpetas
-- [ ] Dominio y datos de prueba
+- [x] Dominio y datos de prueba
 - [ ] Método exacto (Vogel + MODI)
 - [ ] Algoritmo genético
 - [ ] Sensibilidad, escenarios y comparador
