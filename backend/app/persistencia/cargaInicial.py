@@ -1,7 +1,7 @@
 """Carga los datos de prueba de backend/datos/semilla.
 
-Por ahora arma la RedLogistica directamente desde los CSV y el JSON.
-En HU-07 se usa para llenar la base SQLite cuando está vacía.
+cargarRedSemilla() arma la RedLogistica desde los CSV y el JSON, y
+cargarSiVacia() la guarda en la base cuando todavía no tiene datos.
 """
 
 import csv
@@ -74,3 +74,14 @@ def cargarRedSemilla(carpeta: Optional[Path] = None) -> RedLogistica:
         gran_m=float(datos.get("gran_m", 1e8)),
     )
     return RedLogistica(agroempresas, plantas, rutas, parametros)
+
+
+def cargarSiVacia(sesion) -> bool:
+    """Guarda la red de prueba si la base no tiene agroempresas. Devuelve True si cargó."""
+    from app.persistencia.repositorios.redRepository import RedRepository
+
+    repositorio = RedRepository(sesion)
+    if not repositorio.estaVacia():
+        return False
+    repositorio.guardar(cargarRedSemilla())
+    return True

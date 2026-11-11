@@ -115,6 +115,22 @@ streamlit run app.py                # http://localhost:8501
 
 Pruebas: `pytest` desde la carpeta `backend`.
 
+## API
+
+Con la API corriendo, la documentación interactiva está en http://localhost:8000/docs.
+Al iniciar crea `backend/datos/ecoresiduos.db` (no se sube a GitHub) y, si está vacía, carga los datos de prueba.
+
+| Método | Ruta | Para qué |
+|---|---|---|
+| GET | `/red` | Red actual (agroempresas, plantas, rutas y parámetros) |
+| GET | `/red/resumen` | Totales y errores de validación |
+| PUT | `/red` | Guardar la red; si rompe una regla devuelve 422 con los errores |
+| POST | `/red/restablecer` | Volver a los datos de prueba |
+| POST | `/optimizacion/resolver` | Resolver con `exacto` o `genetico` |
+| POST | `/optimizacion/comparar` | Exacto contra N corridas del AG; se guarda en el historial |
+| POST | `/sensibilidad` | Precios sombra, rangos y, si se envía, un escenario |
+| GET | `/reportes` y `/reportes/{id}` | Historial de comparaciones |
+
 ## Datos de prueba
 
 `backend/datos/semilla/` trae una red de ejemplo con 10 agroempresas y 4 plantas del Meta
@@ -130,5 +146,5 @@ para probar el caso de Gran M. Hay que reemplazarlos por los datos reales del ca
 - [x] Método exacto (Vogel + MODI)
 - [x] Algoritmo genético
 - [x] Sensibilidad, escenarios y comparador
-- [ ] Persistencia y API
+- [x] Persistencia y API
 - [ ] Interfaz en Streamlit
