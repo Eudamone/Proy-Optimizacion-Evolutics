@@ -1,0 +1,19 @@
+# 1 · Capa de presentación
+streamlit>=1.36
+plotly>=5.20
+pandas>=2.0
+httpx>=0.27
+
+# 2 · Capa de lógica (API)
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+
+# 3 · Capa de datos
+sqlalchemy>=2.0
+
+# Pruebas
+pytest>=8.0
+
+# Los modelos de optimización (transporte, genetico y analisis) no usan librerías
+# externas: solo la biblioteca estándar de Python.

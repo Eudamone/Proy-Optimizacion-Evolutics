@@ -1,0 +1,8 @@
+# Finales de línea LF en el repositorio para todo el grupo (Windows, Linux o Mac)
+* text=auto eol=lf
+
+# Binarios: no tocar
+*.png binary
+*.svg binary
+*.drawio binary
+*.db binary

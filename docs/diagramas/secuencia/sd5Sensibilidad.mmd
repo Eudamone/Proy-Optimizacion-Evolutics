@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor A as Analista
+  participant UI as Streamlit<br/>Sensibilidad
+  participant C as Sensibilidad<br/>Controller
+  participant S as Servicio<br/>Sensibilidad
+  participant EX as SolverTransporte
+  participant AN as Analizador<br/>Sensibilidad
+  participant SI as Simulador<br/>Escenarios
+  A->>UI: Elige parámetro, rango de variación y pasos
+  UI->>+C: POST /sensibilidad (escenario)
+  C->>+S: analizar(escenario)
+  Note over S,EX: Construye la instancia base
+  S->>+EX: resolver(inst)
+  EX-->>-S: Solucion con InfoDual
+  S->>+AN: analizar(sol)
+  Note over AN,SI: Usa los ciclos y caminos de ArbolBase sobre la base óptima
+  AN-->>-S: ResultadoSensibilidad (precios sombra, dᵢⱼ, rangos)
+  S->>+SI: simular(inst, escenario)
+  loop Para cada delta en escenario.deltas()
+    Note over AN,SI: escenario.aplicar(inst, delta)
+    SI->>+EX: resolver(inst modificada)
+    EX-->>-SI: Solucion
+    Note over AN,SI: Registra PasoEscenario(delta, costo, cambia_base)
+  end
+  SI-->>-S: list[PasoEscenario]
+  S-->>-C: Sensibilidad y escenarios
+  C-->>-UI: 200 OK (JSON)
+  UI-->>A: Precios sombra, rangos y gráfica costo vs. variación

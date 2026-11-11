@@ -1,0 +1,27 @@
+sequenceDiagram
+  autonumber
+  actor A as Analista
+  participant UI as Streamlit<br/>Resolver y comparar
+  participant C as Optimizacion<br/>Controller
+  participant S as Servicio<br/>Optimizacion
+  participant CP as Comparador
+  participant EX as SolverTransporte<br/>«ISolver»
+  participant AG as AlgoritmoGenetico<br/>Solver «ISolver»
+  A->>UI: Ajusta los parámetros del AG y ejecuta
+  UI->>+C: POST /optimizacion/comparar
+  C->>+S: comparar(parametros_ag, corridas)
+  Note over S,CP: Obtiene la red (RedRepository) y arma la instancia (InstanciaBuilder)
+  S->>+CP: comparar(inst, p, corridas)
+  CP->>+EX: resolver(inst)
+  EX-->>-CP: Solucion (Z*, duales, tiempo)
+  loop k = 1 … corridas
+    Note over CP,AG: SolverFactory crea el AG con la semilla k
+    CP->>+AG: resolver(inst)
+    AG-->>-CP: Solucion (Z_AG, tiempo, historial)
+  end
+  Note over CP: Mejor, promedio, desviación y gap %
+  CP-->>-S: Comparacion
+  Note over S,CP: Guarda la comparación (EjecucionRepository)
+  S-->>-C: Comparacion
+  C-->>-UI: 200 OK (JSON)
+  UI-->>A: Tabla comparativa y curva de convergencia

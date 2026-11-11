@@ -1,0 +1,33 @@
+sequenceDiagram
+  autonumber
+  participant ST as SolverTransporte
+  participant BA as Balanceador
+  participant VO as MetodoVogel
+  participant TT as TablaTransporte
+  participant MO as MetodoMODI
+  participant AB as ArbolBase
+  Note over ST: resolver(inst)
+  ST->>+BA: balancear(inst)
+  BA-->>-ST: Instancia balanceada
+  ST->>+VO: construir(inst_balanceada)
+  loop Mientras queden filas y columnas sin cubrir
+    Note over VO,TT: Penalización por fila y columna: diferencia entre sus dos menores costos
+    VO->>TT: Asigna min(oferta, demanda) en la celda más barata de la mayor penalización
+  end
+  VO->>TT: completarBase() (m + n − 1 básicas)
+  VO-->>-ST: Tabla inicial
+  ST->>+MO: optimizar(tabla)
+  loop Hasta que todo dᵢⱼ ≥ 0
+    MO->>+AB: potenciales()
+    AB-->>-MO: uᵢ, vⱼ (uᵢ + vⱼ = cᵢⱼ en básicas)
+    Note over MO: dᵢⱼ = cᵢⱼ − uᵢ − vⱼ
+    opt Algún dᵢⱼ < 0
+      MO->>+AB: ciclo(celda entrante)
+      AB-->>-MO: Ciclo con signos + y −
+      MO->>TT: pivotear(θ = menor asignación con signo −)
+    end
+  end
+  MO-->>-ST: InfoDual (u, v, dᵢⱼ, tabla óptima)
+  ST->>+BA: quitarFicticia(tabla)
+  BA-->>-ST: Matriz x
+  Note over ST,BA: Arma la Solucion (costo, tiempo, iteraciones, dual)

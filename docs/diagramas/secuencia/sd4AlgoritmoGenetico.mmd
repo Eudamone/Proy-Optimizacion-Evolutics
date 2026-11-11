@@ -1,0 +1,34 @@
+sequenceDiagram
+  autonumber
+  participant AG as AlgoritmoGenetico<br/>Solver
+  participant PO as Poblacion
+  participant SE as ISeleccion
+  participant CR as ICruce
+  participant MU as IMutacion
+  participant FI as Fitness<br/>Penalizado
+  participant DE as Decodificador
+  Note over AG: resolver(inst)
+  AG->>PO: Crea la población inicial (n·m genes aleatorios en [0, 1])
+  loop Cada individuo
+    AG->>+FI: evaluar(c, inst)
+    FI->>+DE: decodificar(c, inst)
+    DE-->>-FI: xᵢⱼ = aᵢ · gᵢⱼ / Σₖ gᵢₖ
+    FI-->>-AG: aptitud = 1 / (Z + λ · exceso)
+  end
+  loop generación = 1 … G
+    AG->>PO: ordenar() y copiar la élite
+    loop Hasta completar la nueva población
+      AG->>+SE: seleccionar(pob) ×2
+      SE-->>-AG: Padres a y b
+      opt Con probabilidad p_cruce
+        AG->>+CR: cruzar(a, b)
+        CR-->>-AG: Hijos
+      end
+      AG->>MU: mutar(hijo)
+      AG->>FI: evaluar(hijo, inst)
+    end
+    Note over AG,PO: Registra el mejor costo y el promedio (HistorialConvergencia)
+  end
+  AG->>PO: mejor()
+  AG->>DE: decodificar(mejor, inst)
+  Note over AG,PO: Verifica las restricciones y arma la Solucion

@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Analista
+  participant UI as Streamlit<br/>Parametrización
+  participant C as RedController
+  participant S as ServicioRed
+  participant V as ValidadorRed
+  participant R as RedRepository<br/>(SQLAlchemy)
+  A->>UI: Edita oferta, capacidad y distancias
+  Note over UI: Evento de UI: valida el formato de los campos
+  UI->>+C: PUT /red (JSON)
+  C->>+S: actualizarRed(datos)
+  S->>+R: obtenerRed()
+  R-->>-S: RedLogistica
+  Note over S,V: Aplica los cambios (agregarAgroempresa, agregarPlanta)
+  S->>+V: validar(red)
+  V-->>-S: errores: list[str]
+  alt Hay errores (por ejemplo, Σ oferta > Σ capacidad)
+    S-->>C: ErrorNegocio(errores)
+    C-->>UI: 422 con la lista de errores
+    UI-->>A: Muestra los errores
+  else Red válida
+    S->>+R: guardar(red)
+    R-->>-S: ok (SQL en SQLite)
+    S-->>-C: Resumen de la red
+    C-->>-UI: 200 OK (JSON)
+    UI-->>A: Red factible
+  end
