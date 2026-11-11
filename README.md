@@ -129,6 +129,6 @@ para probar el caso de Gran M. Hay que reemplazarlos por los datos reales del ca
 - [x] Dominio y datos de prueba
 - [x] Método exacto (Vogel + MODI)
 - [x] Algoritmo genético
-- [ ] Sensibilidad, escenarios y comparador
+- [x] Sensibilidad, escenarios y comparador
 - [ ] Persistencia y API
 - [ ] Interfaz en Streamlit
