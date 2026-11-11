@@ -1,13 +1,12 @@
 """Esquemas de optimización: parámetros del AG, soluciones y comparación."""
 
-from dataclasses import asdict
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
 from app.analisis.comparador import Comparacion
 from app.dominio.instancia import InstanciaTransporte
-from app.dominio.solucion import Solucion
+from app.dominio.solucion import Solucion, SolucionExacta, SolucionGenetica
 from app.genetico.parametros import ParametrosAG
 
 
@@ -87,7 +86,7 @@ def solucionADto(sol: Solucion, inst: InstanciaTransporte) -> SolucionDTO:
         for f, p, t in sol.flujos(inst.fuentes, inst.plantas)
     ]
     historial = None
-    if sol.historial is not None:
+    if isinstance(sol, SolucionGenetica) and sol.historial is not None:
         historial = HistorialDTO(mejor_costo=sol.historial.mejor_costo,
                                  costo_promedio=sol.historial.costo_promedio)
     return SolucionDTO(
@@ -100,7 +99,7 @@ def solucionADto(sol: Solucion, inst: InstanciaTransporte) -> SolucionDTO:
         plantas=inst.plantas,
         x=sol.x,
         flujos=flujos,
-        costo_inicial=sol.dual.costoInicial if sol.dual is not None else None,
+        costo_inicial=sol.dual.costoInicial if isinstance(sol, SolucionExacta) else None,
         historial=historial,
     )
 
@@ -122,6 +121,3 @@ def comparacionADto(comp: Comparacion, inst: InstanciaTransporte, ejecucionId: O
         mejor_genetica=solucionADto(comp.mejor_genetica, inst),
     )
 
-
-def parametrosADict(p: ParametrosAG) -> dict:
-    return asdict(p)

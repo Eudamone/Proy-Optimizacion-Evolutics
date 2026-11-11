@@ -3,45 +3,53 @@
 1. Población inicial: genes al azar en [0, 1], la mitad en 0 (repartos con pocas rutas).
 2. Cada generación: pasan los `elitismo` mejores sin cambios; el resto nace de
    selección -> cruce (con probabilidad p_cruce) -> mutación.
-3. Al final se decodifica el mejor individuo y se arma la Solucion.
+3. Al final se decodifica el mejor individuo y se arma la SolucionGenetica.
+
+Los operadores se reciben ya creados (la fábrica los arma); si no llegan, se
+crean desde el registro de operadores según los parámetros.
 """
 
 import time
+from typing import Optional
 
 from app.dominio.instancia import InstanciaTransporte
-from app.dominio.solucion import Solucion
+from app.dominio.solucion import SolucionGenetica
 from app.genetico.aleatorio import GeneradorAleatorio
 from app.genetico.cromosoma import Cromosoma, Poblacion
-from app.genetico.cruce import CruceDosPuntos, CruceUnPunto, ICruce
+from app.genetico.cruce import ICruce
 from app.genetico.decodificador import Decodificador
 from app.genetico.fitness import FitnessPenalizado
 from app.genetico.historial import HistorialConvergencia
-from app.genetico.mutacion import IMutacion, MutacionPoda, MutacionUniforme
+from app.genetico.mutacion import IMutacion
+from app.genetico.operadores import crearCruce, crearMutacion, crearSeleccion
 from app.genetico.parametros import ParametrosAG
-from app.genetico.seleccion import ISeleccion, SeleccionRuleta, SeleccionTorneo
+from app.genetico.seleccion import ISeleccion
 from app.motores.interfaces import ISolver
 
 DENSIDAD_INICIAL = 0.5  # probabilidad de que un gen inicial sea distinto de 0
 
 
 class AlgoritmoGeneticoSolver(ISolver):
-    def __init__(self, params: ParametrosAG = None):
+    def __init__(self, params: ParametrosAG = None, rng: Optional[GeneradorAleatorio] = None,
+                 seleccion: Optional[ISeleccion] = None, cruce: Optional[ICruce] = None,
+                 mutacion: Optional[IMutacion] = None, decodificador: Optional[Decodificador] = None,
+                 fitness: Optional[FitnessPenalizado] = None):
         self.params = params or ParametrosAG()
         errores = self.params.validar()
         if errores:
             raise ValueError(" ".join(errores))
-        self.rng = GeneradorAleatorio(self.params.semilla)
-        self.decodificador = Decodificador()
-        self.fitness = FitnessPenalizado(self.decodificador, self.params.lambda_)
-        self.seleccion = self._crearSeleccion()
-        self.cruce = self._crearCruce()
-        self.mutacion = self._crearMutacion()
+        self.rng = rng or GeneradorAleatorio(self.params.semilla)
+        self.decodificador = decodificador or Decodificador()
+        self.fitness = fitness or FitnessPenalizado(self.decodificador, self.params.lambda_)
+        self.seleccion = seleccion or crearSeleccion(self.params.seleccion, self.rng, self.params)
+        self.cruce = cruce or crearCruce(self.params.cruce, self.rng, self.params)
+        self.mutacion = mutacion or crearMutacion(self.params.mutacion, self.rng, self.params)
         self.historial = HistorialConvergencia()
 
     def nombre(self) -> str:
         return "genetico"
 
-    def resolver(self, inst: InstanciaTransporte) -> Solucion:
+    def resolver(self, inst: InstanciaTransporte) -> SolucionGenetica:
         inicio = time.perf_counter()
         self.historial = HistorialConvergencia()
 
@@ -54,7 +62,7 @@ class AlgoritmoGeneticoSolver(ISolver):
         mejor = pob.mejor()
         x = self.decodificador.decodificar(mejor, inst)
         tiempo = time.perf_counter() - inicio
-        return Solucion(
+        return SolucionGenetica(
             metodo=self.nombre(),
             x=x,
             costo_total=inst.costo(x),
@@ -94,20 +102,3 @@ class AlgoritmoGeneticoSolver(ISolver):
                 self.fitness.evaluar(hijo, inst)
                 nuevos.append(hijo)
         return Poblacion(nuevos)
-
-    # ---- operadores según los parámetros ----
-
-    def _crearSeleccion(self) -> ISeleccion:
-        if self.params.seleccion == "ruleta":
-            return SeleccionRuleta(self.rng)
-        return SeleccionTorneo(self.rng, self.params.k_torneo)
-
-    def _crearCruce(self) -> ICruce:
-        if self.params.cruce == "dos_puntos":
-            return CruceDosPuntos(self.rng)
-        return CruceUnPunto(self.rng)
-
-    def _crearMutacion(self) -> IMutacion:
-        if self.params.mutacion == "uniforme":
-            return MutacionUniforme(self.rng, self.params.p_mutacion)
-        return MutacionPoda(self.rng, self.params.p_mutacion)

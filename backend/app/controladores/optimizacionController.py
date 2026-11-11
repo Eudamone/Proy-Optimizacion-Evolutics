@@ -20,9 +20,5 @@ def resolver(solicitud: SolicitudResolver, servicio: ServicioOptimizacion = Depe
 @router.post("/comparar", response_model=ComparacionDTO,
              summary="Comparar el método exacto con varias corridas del AG (se guarda en el historial)")
 def comparar(solicitud: SolicitudComparacion, servicio: ServicioOptimizacion = Depends(obtenerServicioOptimizacion)):
-    def resultadoParaGuardar(comp, inst):
-        return comparacionADto(comp, inst).model_dump(mode="json")
-
-    comp, inst, ejecucionId = servicio.comparar(solicitud.parametros.aDominio(), solicitud.corridas,
-                                                resultadoParaGuardar)
+    comp, inst, ejecucionId = servicio.comparar(solicitud.parametros.aDominio(), solicitud.corridas)
     return comparacionADto(comp, inst, ejecucionId)

@@ -1,4 +1,14 @@
 [theme]
+# Dirección creativa "Despacho del Llano" (las tipografías se cargan en componentes/tema.py)
 base = "light"
-primaryColor = "#1F4E79"
+primaryColor = "#1E5B43"
+backgroundColor = "#EEF2EB"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1B2620"
 font = "sans serif"
+
+[client]
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false

@@ -138,3 +138,16 @@ def testInstanciasAleatorias(semilla):
 def testFabricaCreaElSolverExacto():
     solver = SolverFactory().crear("exacto")
     assert solver.nombre() == "exacto"
+
+
+def testFabricaPermiteRegistrarUnMetodoNuevo():
+    fabrica = SolverFactory()
+    fabrica.registrar("vogelSolo", lambda parametros=None: SolverTransporte())
+    assert "vogelSolo" in fabrica.metodos()
+    assert fabrica.crear("vogelSolo").nombre() == "exacto"
+
+
+def testSolucionExactaExigeLaInformacionDual():
+    from app.dominio.solucion import SolucionExacta
+    with pytest.raises(ValueError):
+        SolucionExacta(metodo="exacto", x=[[1.0]], costo_total=1.0, tiempo_s=0.0)

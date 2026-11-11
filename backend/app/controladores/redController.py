@@ -2,9 +2,11 @@
 
 from fastapi import APIRouter, Depends
 
-from app.dependencias import obtenerServicioRed
-from app.esquemas.red import RedDTO, ResumenRedDTO, dtoARed, redADto, resumenRed
+from app.dependencias import obtenerServicioRed, obtenerServicioRutas
+from app.esquemas.red import RedDTO, ResumenRedDTO, RutasCarreteraDTO, dtoARed, redADto, resumenRed, rutasCarreteraADto
+from app.infraestructura.rutasCarretera import FUENTE
 from app.servicios.servicioRed import ServicioRed
+from app.servicios.servicioRutas import ServicioRutas
 
 router = APIRouter(prefix="/red", tags=["Red"])
 
@@ -18,6 +20,14 @@ def obtenerRed(servicio: ServicioRed = Depends(obtenerServicioRed)):
 def obtenerResumen(servicio: ServicioRed = Depends(obtenerServicioRed)):
     red = servicio.obtenerRed()
     return resumenRed(red, servicio.validar(red))
+
+
+@router.get("/rutas-carretera", response_model=RutasCarreteraDTO,
+            summary="Trazado por carretera de cada agroempresa a cada planta (para el mapa)")
+def obtenerRutasCarretera(descargar: bool = False, servicio: ServicioRutas = Depends(obtenerServicioRutas)):
+    """Devuelve los trazados guardados. Con descargar=true pide al servicio web OSRM los que
+    falten (unos segundos por ruta) y los guarda; sin internet marca sin_conexion."""
+    return rutasCarreteraADto(servicio.rutasDeLaRed(descargar=descargar), FUENTE)
 
 
 @router.put("", response_model=ResumenRedDTO, summary="Reemplazar la red (se valida antes de guardar)")

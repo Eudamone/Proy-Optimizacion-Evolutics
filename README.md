@@ -51,8 +51,9 @@ Proy-Optimizacion-Evolutics/
 │   │   ├── genetico/             algoritmo genético propio
 │   │   ├── analisis/             sensibilidad, escenarios y comparador
 │   │   ├── persistencia/         3 · Capa de datos: SQLAlchemy y repositorios
-│   │   └── infraestructura/      configuración, eventos y tareas
+│   │   └── infraestructura/      configuración, rutas por carretera (OSRM), eventos y tareas
 │   ├── datos/                    base SQLite y datos de prueba (semilla/)
+│   ├── descargarRutas.py         guarda los trazados por carretera para usar el mapa sin internet
 │   └── tests/                    pruebas unitarias
 └── docs/                         diagramas, bocetos e informe
 ```
@@ -115,6 +116,33 @@ streamlit run app.py                # http://localhost:8501
 
 Pruebas: `pytest` desde la carpeta `backend`.
 
+## Interfaz
+
+La interfaz sigue la dirección creativa "Despacho del Llano" (skill `direccion-creativa-ecoresiduos`).
+
+| Menú | Archivo | Qué muestra |
+|---|---|---|
+| Parametrización | `frontend/vistas/parametrizacion.py` | Indicadores de la red, tablas editables de agroempresas, plantas y distancias; importar CSV; guardar o restablecer |
+| Resolver y comparar | `frontend/vistas/resolverComparar.py` | Indicadores, convergencia, costo por corrida, asignación óptima, mapa de rutas, capacidad por planta y resumen de la comparación con el AG |
+| Sensibilidad | `frontend/vistas/sensibilidad.py` | Ahorro por tonelada de capacidad, rangos y simulación de escenarios |
+| Reportes | `frontend/vistas/reportes.py` | Historial de comparaciones, detalle y descarga en CSV |
+
+### Mapa de rutas
+
+La tarjeta "Rutas del despacho óptimo" tiene dos vistas:
+
+- **Mapa real:** mapa base de CARTO con datos de OpenStreetMap (gratis, sin clave). Necesita internet.
+- **Esquemático:** dibujado con Plotly, con los ríos Meta y Ariari de referencia. Funciona sin internet.
+
+Si al abrir la app no hay internet, arranca en el esquemático. En las dos vistas las rutas siguen
+las carreteras cuando ya están descargadas del servicio web OSRM (también gratis, sin clave): se
+descargan con el botón "Descargar rutas" de la tarjeta o, desde la carpeta `backend`, con
+`python descargarRutas.py`. Quedan en `backend/datos/semilla/rutasCarretera.json`; ese archivo se
+sube a GitHub para que el mapa muestre las carreteras sin conexión. Las distancias por carretera
+solo se muestran en el mapa: el modelo sigue usando las distancias de la red.
+
+La interfaz busca la API en http://127.0.0.1:8000 (con `localhost`, Windows intenta primero IPv6 y cada petición tarda unos 2 s); para otra dirección se usa la variable `ECORESIDUOS_API`.
+
 ## API
 
 Con la API corriendo, la documentación interactiva está en http://localhost:8000/docs.
@@ -126,6 +154,7 @@ Al iniciar crea `backend/datos/ecoresiduos.db` (no se sube a GitHub) y, si está
 | GET | `/red/resumen` | Totales y errores de validación |
 | PUT | `/red` | Guardar la red; si rompe una regla devuelve 422 con los errores |
 | POST | `/red/restablecer` | Volver a los datos de prueba |
+| GET | `/red/rutas-carretera` | Trazados por carretera guardados; con `?descargar=true` consulta a OSRM los que falten |
 | POST | `/optimizacion/resolver` | Resolver con `exacto` o `genetico` |
 | POST | `/optimizacion/comparar` | Exacto contra N corridas del AG; se guarda en el historial |
 | POST | `/sensibilidad` | Precios sombra, rangos y, si se envía, un escenario |
@@ -147,4 +176,4 @@ para probar el caso de Gran M. Hay que reemplazarlos por los datos reales del ca
 - [x] Algoritmo genético
 - [x] Sensibilidad, escenarios y comparador
 - [x] Persistencia y API
-- [ ] Interfaz en Streamlit
+- [x] Interfaz en Streamlit

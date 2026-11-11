@@ -85,3 +85,29 @@ def resumenRed(red: RedLogistica, errores: list[str]) -> ResumenRedDTO:
         factible=not errores,
         errores=errores,
     )
+
+
+class TramoCarreteraDTO(BaseModel):
+    agroempresa_id: str
+    planta_id: str
+    puntos: list[tuple[float, float]] = Field(description="Trazado por carretera como (lat, lon)")
+    distancia_km: float
+    duracion_min: float
+
+
+class RutasCarreteraDTO(BaseModel):
+    tramos: list[TramoCarreteraDTO]
+    faltantes: int = Field(description="Pares que aún no tienen trazado por carretera")
+    sin_conexion: bool = Field(description="True si el servicio de rutas no respondió")
+    fuente: str
+
+
+def rutasCarreteraADto(resultado, fuente: str) -> RutasCarreteraDTO:
+    return RutasCarreteraDTO(
+        tramos=[TramoCarreteraDTO(agroempresa_id=t.agroempresa_id, planta_id=t.planta_id, puntos=t.ruta.puntos,
+                                  distancia_km=t.ruta.distancia_km, duracion_min=t.ruta.duracion_min)
+                for t in resultado.tramos],
+        faltantes=resultado.faltantes,
+        sin_conexion=resultado.sin_conexion,
+        fuente=fuente,
+    )

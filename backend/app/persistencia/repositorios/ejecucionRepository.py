@@ -1,5 +1,9 @@
-"""EjecucionRepository: guarda las comparaciones y consulta el historial."""
+"""EjecucionRepository: guarda las comparaciones y consulta el historial.
 
+Aquí, y solo aquí, se decide cómo una Comparacion del dominio se convierte en una fila.
+"""
+
+from dataclasses import asdict
 from typing import Optional
 
 from sqlalchemy import select
@@ -15,6 +19,21 @@ CAMPOS_RESUMEN = ("id", "fecha", "tipo", "z_exacto", "z_ag_mejor", "z_ag_promedi
 class EjecucionRepository(IEjecucionRepository):
     def __init__(self, sesion: Session):
         self.sesion = sesion
+
+    def guardarComparacion(self, comparacion, parametros, corridas: int, detalle: dict) -> int:
+        return self.guardar({
+            "tipo": "comparacion",
+            "z_exacto": comparacion.z_exacto,
+            "z_ag_mejor": comparacion.z_ag_mejor,
+            "z_ag_promedio": comparacion.z_ag_promedio,
+            "desv_estandar": comparacion.desv_estandar,
+            "gap_pct": comparacion.gapPct(),
+            "tiempo_exacto_s": comparacion.tiempos["exacto"],
+            "tiempo_ag_s": comparacion.tiempos["genetico_promedio"],
+            "corridas": corridas,
+            "parametros": asdict(parametros),
+            "resultado": detalle,
+        })
 
     def guardar(self, datos: dict) -> int:
         fila = EjecucionModelo(**datos)

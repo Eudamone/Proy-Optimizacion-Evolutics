@@ -1,8 +1,10 @@
 """ServicioOptimizacion: arma la instancia desde la red guardada, resuelve con un
-método o compara ambos, y guarda cada comparación en el historial.
+método o compara ambos, y registra cada comparación en el historial.
+
+Recibe todas sus dependencias ya creadas (las arma dependencias.py).
 """
 
-from typing import Optional
+from typing import Callable, Optional
 
 from app.analisis.comparador import Comparacion, Comparador
 from app.dominio.instancia import InstanciaBuilder, InstanciaTransporte
@@ -13,15 +15,19 @@ from app.motores.fabrica import SolverFactory
 from app.persistencia.repositorios.interfaces import IEjecucionRepository, IRedRepository
 from app.servicios.errores import ErrorNegocio
 
+Serializador = Callable[[Comparacion, InstanciaTransporte], dict]
+
 
 class ServicioOptimizacion:
     def __init__(self, repositorioRed: IRedRepository, repositorioEjecuciones: IEjecucionRepository,
-                 fabrica: SolverFactory = None):
+                 fabrica: SolverFactory, validador: ValidadorRed, builder: InstanciaBuilder,
+                 serializador: Optional[Serializador] = None):
         self.repositorioRed = repositorioRed
         self.repositorioEjecuciones = repositorioEjecuciones
-        self.fabrica = fabrica or SolverFactory()
-        self.validador = ValidadorRed()
-        self.builder = InstanciaBuilder()
+        self.fabrica = fabrica
+        self.validador = validador
+        self.builder = builder
+        self.serializador = serializador or (lambda comparacion, inst: {})
 
     def instanciaActual(self) -> InstanciaTransporte:
         red = self.repositorioRed.obtenerRed()
@@ -31,33 +37,21 @@ class ServicioOptimizacion:
         return self.builder.construir(red)
 
     def resolver(self, metodo: str, parametros: Optional[ParametrosAG] = None) -> tuple[Solucion, InstanciaTransporte]:
+        self._validarParametros(parametros)
+        inst = self.instanciaActual()
+        return self.fabrica.crear(metodo, parametros).resolver(inst), inst
+
+    def comparar(self, parametros: ParametrosAG, corridas: int) -> tuple[Comparacion, InstanciaTransporte, int]:
+        self._validarParametros(parametros)
+        inst = self.instanciaActual()
+        comparacion = Comparador(self.fabrica).comparar(inst, parametros, corridas)
+        ejecucionId = self.repositorioEjecuciones.guardarComparacion(
+            comparacion, parametros, corridas, self.serializador(comparacion, inst))
+        return comparacion, inst, ejecucionId
+
+    @staticmethod
+    def _validarParametros(parametros: Optional[ParametrosAG]) -> None:
         if parametros is not None:
             errores = parametros.validar()
             if errores:
                 raise ErrorNegocio(errores)
-        inst = self.instanciaActual()
-        solver = self.fabrica.crear(metodo, parametros)
-        return solver.resolver(inst), inst
-
-    def comparar(self, parametros: ParametrosAG, corridas: int,
-                 resultadoParaGuardar=None) -> tuple[Comparacion, InstanciaTransporte, int]:
-        errores = parametros.validar()
-        if errores:
-            raise ErrorNegocio(errores)
-        inst = self.instanciaActual()
-        comparacion = Comparador(self.fabrica).comparar(inst, parametros, corridas)
-        resultado = resultadoParaGuardar(comparacion, inst) if resultadoParaGuardar else {}
-        ejecucionId = self.repositorioEjecuciones.guardar({
-            "tipo": "comparacion",
-            "z_exacto": comparacion.z_exacto,
-            "z_ag_mejor": comparacion.z_ag_mejor,
-            "z_ag_promedio": comparacion.z_ag_promedio,
-            "desv_estandar": comparacion.desv_estandar,
-            "gap_pct": comparacion.gapPct(),
-            "tiempo_exacto_s": comparacion.tiempos["exacto"],
-            "tiempo_ag_s": comparacion.tiempos["genetico_promedio"],
-            "corridas": corridas,
-            "parametros": vars(parametros).copy(),
-            "resultado": resultado,
-        })
-        return comparacion, inst, ejecucionId

@@ -14,7 +14,7 @@ import math
 from dataclasses import dataclass, field
 
 from app.dominio.instancia import InstanciaTransporte
-from app.dominio.solucion import Solucion
+from app.dominio.solucion import SolucionExacta
 from app.dominio.tipos import Celda, Matriz
 from app.transporte.arbolBase import ArbolBase
 from app.transporte.modi import InfoDual
@@ -45,10 +45,10 @@ class ResultadoSensibilidad:
 
 
 class AnalizadorSensibilidad:
-    def analizar(self, sol: Solucion, inst: InstanciaTransporte) -> ResultadoSensibilidad:
+    def analizar(self, sol: SolucionExacta, inst: InstanciaTransporte) -> ResultadoSensibilidad:
+        if not isinstance(sol, SolucionExacta):
+            raise ValueError("La sensibilidad necesita la solución del método exacto (SolucionExacta).")
         dual: InfoDual = sol.dual
-        if dual is None:
-            raise ValueError("La sensibilidad necesita la solución del método exacto (con InfoDual).")
         n, m = inst.n(), inst.m()
         hayFicticia = len(dual.u) > n
         arbol = ArbolBase(dual.basicas, len(dual.u), m)

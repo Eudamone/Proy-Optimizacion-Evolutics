@@ -1,7 +1,11 @@
 """Escenarios "¿qué pasa si...?": se cambia un dato en varios pasos y se vuelve a
 resolver con el método exacto en cada uno.
+
+Cada tipo de escenario tiene su modificador; para agregar un tipo nuevo se crea
+su clase y se registra en MODIFICADORES, sin tocar Escenario ni el simulador.
 """
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
@@ -17,6 +21,55 @@ class TipoEscenario(Enum):
     CIERRE_PLANTA = "CIERRE_PLANTA"         # la planta objetivo queda con capacidad 0
 
 
+# ---- modificadores (uno por tipo de escenario) ----
+
+class IModificador(ABC):
+    unPasoSolo = False      # True si el escenario no se recorre por porcentajes
+    sobreFuentes = False    # True si el objetivo es una agroempresa (fila); si no, una planta (columna)
+
+    @abstractmethod
+    def aplicar(self, inst: InstanciaTransporte, indices: list[int], factor: float) -> None:
+        """Modifica la copia de la instancia que recibe."""
+
+
+class ModificadorCostoTransporte(IModificador):
+    def aplicar(self, inst, indices, factor):
+        for i in range(inst.n()):
+            for j in indices:
+                if inst.C[i][j] < inst.gran_m:
+                    inst.C[i][j] *= factor
+
+
+class ModificadorOferta(IModificador):
+    sobreFuentes = True
+
+    def aplicar(self, inst, indices, factor):
+        for i in indices:
+            inst.a[i] *= factor
+
+
+class ModificadorCapacidad(IModificador):
+    def aplicar(self, inst, indices, factor):
+        for j in indices:
+            inst.b[j] *= factor
+
+
+class ModificadorCierrePlanta(IModificador):
+    unPasoSolo = True
+
+    def aplicar(self, inst, indices, factor):
+        for j in indices:
+            inst.b[j] = 0.0
+
+
+MODIFICADORES: dict[TipoEscenario, IModificador] = {
+    TipoEscenario.COSTO_TRANSPORTE: ModificadorCostoTransporte(),
+    TipoEscenario.OFERTA: ModificadorOferta(),
+    TipoEscenario.CAPACIDAD: ModificadorCapacidad(),
+    TipoEscenario.CIERRE_PLANTA: ModificadorCierrePlanta(),
+}
+
+
 @dataclass
 class Escenario:
     tipo: TipoEscenario
@@ -25,8 +78,12 @@ class Escenario:
     delta_max: float = 20.0          # en %
     pasos: int = 5
 
+    @property
+    def modificador(self) -> IModificador:
+        return MODIFICADORES[self.tipo]
+
     def deltas(self) -> list[float]:
-        if self.tipo == TipoEscenario.CIERRE_PLANTA:
+        if self.modificador.unPasoSolo:
             return [100.0]
         if self.pasos <= 1:
             return [self.delta_min]
@@ -35,27 +92,13 @@ class Escenario:
 
     def aplicar(self, inst: InstanciaTransporte, delta: float) -> InstanciaTransporte:
         """Copia de la instancia con el cambio aplicado (delta en %)."""
-        factor = 1 + delta / 100
+        if self.modificador.unPasoSolo and self.objetivo is None:
+            raise ValueError("Para este escenario hay que indicar a qué planta se aplica.")
         nueva = inst.conCambios()
-        if self.tipo == TipoEscenario.COSTO_TRANSPORTE:
-            for i in range(nueva.n()):
-                for j in self._indices(nueva.m()):
-                    if nueva.C[i][j] < nueva.gran_m:
-                        nueva.C[i][j] *= factor
-        elif self.tipo == TipoEscenario.OFERTA:
-            for i in self._indices(nueva.n()):
-                nueva.a[i] *= factor
-        elif self.tipo == TipoEscenario.CAPACIDAD:
-            for j in self._indices(nueva.m()):
-                nueva.b[j] *= factor
-        elif self.tipo == TipoEscenario.CIERRE_PLANTA:
-            if self.objetivo is None:
-                raise ValueError("Para cerrar una planta hay que indicar cuál.")
-            nueva.b[self.objetivo] = 0.0
+        total = nueva.n() if self.modificador.sobreFuentes else nueva.m()
+        indices = list(range(total)) if self.objetivo is None else [self.objetivo]
+        self.modificador.aplicar(nueva, indices, 1 + delta / 100)
         return nueva
-
-    def _indices(self, total: int) -> list[int]:
-        return list(range(total)) if self.objetivo is None else [self.objetivo]
 
 
 @dataclass
@@ -68,10 +111,7 @@ class PasoEscenario:
 
 
 class SimuladorEscenarios:
-    def __init__(self, solver: ISolver = None):
-        if solver is None:
-            from app.transporte.solverTransporte import SolverTransporte
-            solver = SolverTransporte()
+    def __init__(self, solver: ISolver):
         self.solver = solver
 
     def simular(self, inst: InstanciaTransporte, esc: Escenario) -> list[PasoEscenario]:

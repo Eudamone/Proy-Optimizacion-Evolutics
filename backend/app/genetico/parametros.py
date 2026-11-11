@@ -3,9 +3,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-SELECCIONES = ("torneo", "ruleta")
-CRUCES = ("un_punto", "dos_puntos")
-MUTACIONES = ("uniforme", "poda")
+from app.genetico.operadores import CRUCES, MUTACIONES, SELECCIONES
 
 
 @dataclass

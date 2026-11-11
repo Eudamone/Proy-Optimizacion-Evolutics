@@ -1,3 +1,15 @@
-"""Eventos de la pantalla Resolver y comparar: ejecutar la comparación y
-mostrar el progreso.
-"""
+"""Eventos de la pantalla Despacho: ejecutar la comparación del método exacto contra el AG."""
+
+import streamlit as st
+
+from clienteApi.cliente import ErrorApi
+from estado.estadoUi import EstadoUI
+
+
+def ejecutarComparacion(estado: EstadoUI, parametros: dict, corridas: int) -> None:
+    estado.limpiarMensajes()
+    with st.spinner(f"Despachando: método exacto y {corridas} corridas del algoritmo genético…"):
+        try:
+            estado.ultimaComparacion = estado.apiOptimizacion.comparar(parametros, corridas)
+        except ErrorApi as error:
+            estado.errores = error.errores

@@ -1,11 +1,11 @@
 """SolverTransporte (implementa ISolver): balancear -> Vogel -> MODI -> quitar la
-ficticia -> Solucion con InfoDual.
+ficticia -> SolucionExacta con InfoDual.
 """
 
 import time
 
 from app.dominio.instancia import InstanciaTransporte
-from app.dominio.solucion import Solucion
+from app.dominio.solucion import SolucionExacta
 from app.motores.interfaces import ISolver
 from app.transporte.balanceador import Balanceador
 from app.transporte.modi import MetodoMODI
@@ -22,7 +22,7 @@ class SolverTransporte(ISolver):
     def nombre(self) -> str:
         return "exacto"
 
-    def resolver(self, inst: InstanciaTransporte) -> Solucion:
+    def resolver(self, inst: InstanciaTransporte) -> SolucionExacta:
         inicio = time.perf_counter()
         balanceada = self.balanceador.balancear(inst)
         tabla = self.inicial.construir(balanceada)
@@ -30,7 +30,7 @@ class SolverTransporte(ISolver):
         x = self.balanceador.quitarFicticia(tabla)
         x = [[0.0 if abs(valor) < 1e-9 else valor for valor in fila] for fila in x]
         tiempo = time.perf_counter() - inicio
-        return Solucion(
+        return SolucionExacta(
             metodo=self.nombre(),
             x=x,
             costo_total=inst.costo(x),

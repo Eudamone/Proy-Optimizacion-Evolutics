@@ -19,8 +19,8 @@ class IRedRepository(ABC):
 
 class IEjecucionRepository(ABC):
     @abstractmethod
-    def guardar(self, datos: dict) -> int:
-        """Guarda una ejecución y devuelve su id."""
+    def guardarComparacion(self, comparacion, parametros, corridas: int, detalle: dict) -> int:
+        """Guarda una comparación (Comparacion y ParametrosAG del dominio) y devuelve su id."""
 
     @abstractmethod
     def listar(self, limite: int = 50) -> list[dict]: ...

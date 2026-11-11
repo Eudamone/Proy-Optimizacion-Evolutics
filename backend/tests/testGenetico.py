@@ -160,3 +160,25 @@ def testRedSemillaCercaDelOptimo(instanciaSemilla):
 def testFabricaCreaElGenetico():
     solver = SolverFactory().crear("genetico", ParametrosAG(semilla=1))
     assert solver.nombre() == "genetico"
+
+
+def testElAgUsaLosOperadoresQueRecibe(instanciaSemilla):
+    class SinMutacion(MutacionUniforme):
+        def mutar(self, c):
+            self.llamadas = getattr(self, "llamadas", 0) + 1
+
+    mutacion = SinMutacion(GeneradorAleatorio(1), prob=1)
+    solver = AlgoritmoGeneticoSolver(ParametrosAG(poblacion=10, generaciones=3, semilla=1), mutacion=mutacion)
+    solver.resolver(instanciaSemilla)
+    assert mutacion.llamadas == 3 * (10 - 2)  # cada hijo nuevo pasa por la mutación inyectada
+
+
+def testRegistroDeOperadoresCubreLosParametros():
+    from app.genetico.operadores import CRUCES, MUTACIONES, SELECCIONES
+    for seleccion in SELECCIONES:
+        for cruce in CRUCES:
+            for mutacion in MUTACIONES:
+                p = ParametrosAG(poblacion=10, generaciones=2, seleccion=seleccion, cruce=cruce,
+                                 mutacion=mutacion, semilla=1)
+                assert p.validar() == []
+                assert SolverFactory().genetico(p).nombre() == "genetico"

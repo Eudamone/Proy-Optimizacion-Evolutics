@@ -125,7 +125,7 @@ def testCostoDeTransporteRespetaGranM(instanciaSemilla):
 
 def testSimularCapacidadDeVillavicencio(instanciaSemilla):
     esc = Escenario(TipoEscenario.CAPACIDAD, objetivo=0, delta_min=-30, delta_max=40, pasos=8)
-    pasos = SimuladorEscenarios().simular(instanciaSemilla, esc)
+    pasos = SimuladorEscenarios(SolverTransporte()).simular(instanciaSemilla, esc)
     porDelta = {p.delta: p for p in pasos}
     assert porDelta[0].cambia_base is False
     assert porDelta[0].costo_total == pytest.approx(resolver(instanciaSemilla))
@@ -135,7 +135,7 @@ def testSimularCapacidadDeVillavicencio(instanciaSemilla):
 
 def testCerrarUnaPlantaPuedeVolverInfactibleLaRed(instanciaSemilla):
     esc = Escenario(TipoEscenario.CIERRE_PLANTA, objetivo=instanciaSemilla.plantas.index("P04"))
-    [paso] = SimuladorEscenarios().simular(instanciaSemilla, esc)
+    [paso] = SimuladorEscenarios(SolverTransporte()).simular(instanciaSemilla, esc)
     assert paso.factible is False   # quedan 330 t de capacidad para 373 t
     assert paso.costo_total is None
     assert "supera la capacidad" in paso.mensaje
@@ -159,3 +159,8 @@ def testComparadorResumeLasCorridas(instanciaSemilla):
 def testComparadorSinCorridas(instanciaSemilla):
     with pytest.raises(ValueError):
         Comparador().comparar(instanciaSemilla, ParametrosAG(), corridas=0)
+
+
+def testCadaTipoDeEscenarioTieneSuModificador():
+    from app.analisis.escenarios import MODIFICADORES
+    assert set(MODIFICADORES) == set(TipoEscenario)
