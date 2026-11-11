@@ -1,5 +1,5 @@
 """SolverFactory: crea el solver exacto (SolverTransporte) o el genético
-(AlgoritmoGeneticoSolver, HU-04) a partir de su nombre.
+(AlgoritmoGeneticoSolver) a partir de su nombre.
 """
 
 from app.motores.interfaces import ISolver
@@ -11,7 +11,8 @@ class SolverFactory:
         return SolverTransporte()
 
     def genetico(self, parametros=None) -> ISolver:
-        raise NotImplementedError("El algoritmo genético se implementa en HU-04.")
+        from app.genetico.solverGenetico import AlgoritmoGeneticoSolver
+        return AlgoritmoGeneticoSolver(parametros)
 
     def crear(self, metodo: str, parametros=None) -> ISolver:
         if metodo == "exacto":

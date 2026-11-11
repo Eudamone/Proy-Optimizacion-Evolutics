@@ -128,7 +128,7 @@ para probar el caso de Gran M. Hay que reemplazarlos por los datos reales del ca
 - [x] Estructura de carpetas
 - [x] Dominio y datos de prueba
 - [x] Método exacto (Vogel + MODI)
-- [ ] Algoritmo genético
+- [x] Algoritmo genético
 - [ ] Sensibilidad, escenarios y comparador
 - [ ] Persistencia y API
 - [ ] Interfaz en Streamlit
