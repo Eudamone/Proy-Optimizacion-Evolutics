@@ -1,2 +1,2 @@
-"""Infraestructura transversal: configuración, eventos de lógica y tareas en segundo plano.
+"""Infraestructura transversal: configuración y rutas por carretera (servicio OSRM).
 """

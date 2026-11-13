@@ -51,11 +51,11 @@ Proy-Optimizacion-Evolutics/
 │   │   ├── genetico/             algoritmo genético propio
 │   │   ├── analisis/             sensibilidad, escenarios y comparador
 │   │   ├── persistencia/         3 · Capa de datos: SQLAlchemy y repositorios
-│   │   └── infraestructura/      configuración, rutas por carretera (OSRM), eventos y tareas
+│   │   └── infraestructura/      configuración y rutas por carretera (OSRM)
 │   ├── datos/                    base SQLite y datos de prueba (semilla/)
 │   ├── descargarRutas.py         guarda los trazados por carretera para usar el mapa sin internet
 │   └── tests/                    pruebas unitarias
-└── docs/                         diagramas, bocetos e informe
+└── docs/                         diagramas, MER e informe
 ```
 
 ## Convenciones de nombres
@@ -80,7 +80,7 @@ Proy-Optimizacion-Evolutics/
 | genetico | `backend/app/genetico/` |
 | analisis | `backend/app/analisis/` |
 
-| Pantalla de los bocetos | Archivo |
+| Pantalla | Archivo |
 |---|---|
 | 1 · Parametrización | `frontend/vistas/parametrizacion.py` |
 | 2 · Resolver y comparar | `frontend/vistas/resolverComparar.py` |
