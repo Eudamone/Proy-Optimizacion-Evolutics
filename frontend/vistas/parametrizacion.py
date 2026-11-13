@@ -16,8 +16,7 @@ from eventosUi.parametrizacionEventos import cargarRed, guardarRed, leerCsv, res
 
 estado = obtenerEstado()
 pulsadoGuardar = encabezado("Parametrización",
-                            "Agroempresas, plantas, distancias y tarifa. La API revisa que la red se pueda despachar "
-                            "antes de guardarla.", "Guardar red", clave="botonGuardar", icono=":material/save:")
+                            "Agroempresas, plantas, distancias y tarifa de la red.", "Guardar red", clave="botonGuardar", icono=":material/save:")
 try:
     cargarRed(estado)
 except ErrorApi as error:
@@ -94,13 +93,13 @@ activas = dfPlantas[dfPlantas["activa"].fillna(True).astype(bool)]
 capacidad = float(activas["capacidad_t"].fillna(0).sum())
 with indicadores:
     tarjetasKpi([
-        {"etiqueta": "Oferta total", "valor": formatoToneladas(oferta), "detalle": f"{len(dfAgro)} agroempresas · por semana",
+        {"icono": "tonelada", "etiqueta": "Oferta total", "valor": formatoToneladas(oferta), "detalle": f"{len(dfAgro)} agroempresas · por semana",
          "destacada": True},
-        {"etiqueta": "Capacidad activa", "valor": formatoToneladas(capacidad),
+        {"icono": "planta", "etiqueta": "Capacidad activa", "valor": formatoToneladas(capacidad),
          "detalle": f"{len(activas)} de {len(dfPlantas)} plantas activas"},
-        {"etiqueta": "Capacidad libre", "valor": formatoToneladas(capacidad - oferta),
+        {"icono": "planta", "etiqueta": "Capacidad libre", "valor": formatoToneladas(capacidad - oferta),
          "detalle": "la absorbe una fuente ficticia de costo 0"},
-        {"etiqueta": "Rutas", "valor": str(len(distancias)),
+        {"icono": "camion", "etiqueta": "Rutas", "valor": str(len(distancias)),
          "detalle": f"{sum(1 for v in habilitadas.values() if not v)} bloqueadas"},
     ])
     if oferta > capacidad:

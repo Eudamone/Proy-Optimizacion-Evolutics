@@ -38,8 +38,10 @@ def _notaFuentes(rutas, tipoMapa: str) -> str:
 
 
 estado = obtenerEstado()
-pulsado = encabezado("Resolver y comparar",
-                     "Método exacto (Vogel + MODI) contra el algoritmo genético sobre la red de esta semana.",
+previa = estado.ultimaComparacion
+subtitulo = (f"El genético quedó a {formatoPorcentaje(previa['gap_pct'])} del óptimo en {len(previa['costos_ag'])} corridas."
+             if previa else "Método exacto (Vogel + MODI) contra el algoritmo genético.")
+pulsado = encabezado("Resolver y comparar", subtitulo,
                      "Resolver y comparar", clave="botonComparar", icono=":material/play_arrow:")
 
 try:
@@ -57,6 +59,7 @@ if pulsado:
     ejecutarComparacion(estado, parametros, corridas)
     if estado.ultimaComparacion:
         st.session_state["horaComparacion"] = datetime.now()
+        st.rerun()  # para que el subtítulo muestre el resultado nuevo
 mostrarErrores(estado.errores)
 
 comparacion = estado.ultimaComparacion
@@ -69,28 +72,26 @@ if comparacion:
                   f"1 corrida exacta y {len(comparacion['costos_ag'])} del AG, ejecución #{comparacion['ejecucion_id']} "
                   f"del {hora.day} de {MESES[hora.month - 1]}, {hora:%H:%M}.")
     tiempoAg = comparacion["tiempos"]["genetico_promedio"]
-    veces = tiempoAg / max(comparacion["tiempos"]["exacto"], 1e-6)
     tarjetasKpi([
-        {"etiqueta": "Costo óptimo · método exacto", "valor": formatoPesos(comparacion["z_exacto"]),
-         "detalle": f"por semana · Vogel + MODI · {formatoNumero(comparacion['tiempos']['exacto'] * 1000, 1)} ms",
+        {"icono": "ruta", "etiqueta": "Costo óptimo · método exacto", "valor": formatoPesos(comparacion["z_exacto"]),
+         "detalle": f"por semana · {len(comparacion['exacta']['flujos'])} rutas",
          "destacada": True},
-        {"etiqueta": "Mejor costo del AG", "valor": formatoPesos(comparacion["z_ag_mejor"]),
+        {"icono": "camion", "ag": True, "etiqueta": "Mejor costo del AG", "valor": formatoPesos(comparacion["z_ag_mejor"]),
          "detalle": f"+{formatoPesos(comparacion['z_ag_mejor'] - comparacion['z_exacto'])} sobre el óptimo"},
-        {"etiqueta": "Gap del mejor AG", "valor": formatoPorcentaje(comparacion["gap_pct"]),
-         "detalle": f"promedio de las {len(comparacion['costos_ag'])} corridas: "
-                    f"{formatoPorcentaje(comparacion['gap_promedio_pct'])}"},
-        {"etiqueta": "Tiempo por corrida del AG", "valor": f"{formatoNumero(tiempoAg, 2)} s",
-         "detalle": f"{formatoNumero(veces, 0)} veces más lento que el exacto"},
+        {"icono": "planta", "etiqueta": "Gap del mejor AG", "valor": formatoPorcentaje(comparacion["gap_pct"]),
+         "detalle": f"promedio: {formatoPorcentaje(comparacion['gap_promedio_pct'])}"},
+        {"icono": "reloj", "etiqueta": "Tiempo por corrida del AG", "valor": f"{formatoNumero(tiempoAg, 2)} s",
+         "detalle": f"exacto: {formatoNumero(comparacion['tiempos']['exacto'] * 1000, 1)} ms"},
     ])
 else:
     toneladas = sum(f["toneladas"] for f in exacta["flujos"])
     tarjetasKpi([
-        {"etiqueta": "Costo óptimo · método exacto", "valor": formatoPesos(exacta["costo_total"]),
+        {"icono": "ruta", "etiqueta": "Costo óptimo · método exacto", "valor": formatoPesos(exacta["costo_total"]),
          "detalle": f"por semana · Vogel + MODI · {formatoNumero(exacta['tiempo_s'] * 1000, 1)} ms", "destacada": True},
-        {"etiqueta": "Costo inicial de Vogel", "valor": formatoPesos(exacta["costo_inicial"]),
+        {"icono": "historial", "etiqueta": "Costo inicial de Vogel", "valor": formatoPesos(exacta["costo_inicial"]),
          "detalle": f"MODI lo mejoró en {exacta['iteraciones']} iteraciones"},
-        {"etiqueta": "Toneladas despachadas", "valor": formatoNumero(toneladas) + " t", "detalle": "por semana"},
-        {"etiqueta": "Rutas en uso", "valor": str(len(exacta["flujos"])),
+        {"icono": "tonelada", "etiqueta": "Toneladas despachadas", "valor": formatoNumero(toneladas) + " t", "detalle": "por semana"},
+        {"icono": "camion", "etiqueta": "Rutas en uso", "valor": str(len(exacta["flujos"])),
          "detalle": f"de {len(red['agroempresas']) * len(red['plantas'])} posibles"},
     ])
 st.write("")
@@ -110,7 +111,7 @@ st.write("")
 izquierda, derecha = st.columns(2, gap="medium")
 with izquierda:
     with tarjeta("corridas", "Costo de cada corrida del AG",
-                 "Cada punto es una semilla; la línea punteada es el óptimo del método exacto."):
+                 ayuda="Cada punto es una semilla; la línea punteada es el óptimo del método exacto."):
         if comparacion:
             st.plotly_chart(graficarCorridas(comparacion["costos_ag"], comparacion["semillas"], comparacion["z_exacto"]),
                             width="stretch", config={"displayModeBar": False})
@@ -134,7 +135,7 @@ with izquierda:
     if rutas and not rutas["faltantes"] and any(enUso):  # sin trazado = mismo municipio, 0 km
         nota += f" · {formatoNumero(sum(t['distancia_km'] for t in enUso if t))} km por carretera"
     hayInternet = estado.hayInternet()
-    with tarjeta("mapa", "Rutas del despacho óptimo", nota + ". El grosor de cada ruta es proporcional a las toneladas."):
+    with tarjeta("mapa", "Rutas del despacho óptimo", nota, ayuda="El grosor de cada ruta es proporcional a las toneladas."):
         tipoMapa = st.segmented_control("Tipo de mapa", ["Mapa real", "Esquemático"], key="tipoMapa",
                                         default="Mapa real" if hayInternet else "Esquemático",
                                         label_visibility="collapsed") or "Esquemático"

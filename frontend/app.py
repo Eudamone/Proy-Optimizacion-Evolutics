@@ -27,7 +27,9 @@ pagina = st.navigation(PAGINAS, position="hidden")
 with st.sidebar:
     marcaLateral()
     for p in PAGINAS:
-        st.page_link(p, label=p.title, icon=p.icon)
+        activa = p.title == pagina.title
+        with st.container(key="navActiva" if activa else f"nav{p.title.replace(' ', '')}"):
+            st.page_link(p, label=p.title, icon=p.icon)
     st.divider()
     estado = obtenerEstado()
     try:

@@ -25,15 +25,15 @@ if not ejecuciones:
     st.stop()
 
 mejor = min(ejecuciones, key=lambda e: e["gap_pct"])
-encabezado("Reportes", f"{len(ejecuciones)} comparaciones guardadas. El mejor resultado del algoritmo genético "
-                       f"quedó a {formatoPorcentaje(mejor['gap_pct'])} del óptimo (comparación #{mejor['id']}).")
+encabezado("Reportes", f"{len(ejecuciones)} comparaciones guardadas · mejor gap "
+                       f"{formatoPorcentaje(mejor['gap_pct'])} (#{mejor['id']})")
 tarjetasKpi([
-    {"etiqueta": "Comparaciones guardadas", "valor": str(len(ejecuciones)),
+    {"icono": "historial", "etiqueta": "Comparaciones guardadas", "valor": str(len(ejecuciones)),
      "detalle": f"{sum(e['corridas'] for e in ejecuciones)} corridas del AG en total", "destacada": True},
-    {"etiqueta": "Mejor gap", "valor": formatoPorcentaje(mejor["gap_pct"]), "detalle": f"comparación #{mejor['id']}"},
-    {"etiqueta": "Gap promedio", "valor": formatoPorcentaje(sum(e["gap_pct"] for e in ejecuciones) / len(ejecuciones)),
+    {"icono": "camion", "ag": True, "etiqueta": "Mejor gap", "valor": formatoPorcentaje(mejor["gap_pct"]), "detalle": f"comparación #{mejor['id']}"},
+    {"icono": "camion", "etiqueta": "Gap promedio", "valor": formatoPorcentaje(sum(e["gap_pct"] for e in ejecuciones) / len(ejecuciones)),
      "detalle": "del mejor AG de cada comparación"},
-    {"etiqueta": "Tiempo por corrida del AG", "valor":
+    {"icono": "reloj", "etiqueta": "Tiempo por corrida del AG", "valor":
         f"{formatoNumero(sum(e['tiempo_ag_s'] for e in ejecuciones) / len(ejecuciones), 2)} s", "detalle": "promedio"},
 ])
 st.write("")
@@ -79,12 +79,12 @@ with tarjeta("detalle", "Detalle de una comparación"):
 
     r = detalle["resultado"]
     tarjetasKpi([
-        {"etiqueta": "Óptimo · método exacto", "valor": formatoPesos(r["z_exacto"]), "detalle": "por semana",
+        {"icono": "ruta", "etiqueta": "Óptimo · método exacto", "valor": formatoPesos(r["z_exacto"]), "detalle": "por semana",
          "destacada": True},
-        {"etiqueta": "Mejor del AG", "valor": formatoPesos(r["z_ag_mejor"]), "detalle": f"gap {formatoPorcentaje(r['gap_pct'])}"},
-        {"etiqueta": "Promedio del AG", "valor": formatoPesos(r["z_ag_promedio"]),
+        {"icono": "camion", "ag": True, "etiqueta": "Mejor del AG", "valor": formatoPesos(r["z_ag_mejor"]), "detalle": f"gap {formatoPorcentaje(r['gap_pct'])}"},
+        {"icono": "camion", "etiqueta": "Promedio del AG", "valor": formatoPesos(r["z_ag_promedio"]),
          "detalle": f"gap {formatoPorcentaje(r['gap_promedio_pct'])} · {len(r['costos_ag'])} corridas"},
-        {"etiqueta": "Tiempo por corrida del AG", "valor": f"{formatoNumero(r['tiempos']['genetico_promedio'], 2)} s",
+        {"icono": "reloj", "etiqueta": "Tiempo por corrida del AG", "valor": f"{formatoNumero(r['tiempos']['genetico_promedio'], 2)} s",
          "detalle": f"exacto: {formatoNumero(r['tiempos']['exacto'] * 1000, 1)} ms"},
     ])
     historial = r["mejor_genetica"]["historial"]

@@ -118,7 +118,7 @@ Pruebas: `pytest` desde la carpeta `backend`.
 
 ## Interfaz
 
-La interfaz sigue la dirección creativa "Despacho del Llano" (skill `direccion-creativa-ecoresiduos`).
+La interfaz sigue la dirección "Atardecer llanero": índigo para la navegación, azul para el método exacto, naranja para la acción principal y el algoritmo genético, y el paisaje de la red (`frontend/static/paisajeLlano.png`) al pie de cada pantalla.
 
 | Menú | Archivo | Qué muestra |
 |---|---|---|

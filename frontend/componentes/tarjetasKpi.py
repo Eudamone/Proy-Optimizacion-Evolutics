@@ -27,17 +27,37 @@ def mostrarErrores(errores: list[str]) -> None:
         mostrarEstado("error", "", error)
 
 
+ICONOS_KPI = {
+    "ruta": '<svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
+            '<circle cx="4" cy="16" r="2.5"/><circle cx="18" cy="4" r="2.5"/><path d="M6 15c6-1 3-9 10-10" stroke-dasharray="3 3"/></svg>',
+    "camion": '<svg width="26" height="18" viewBox="0 0 26 18" aria-hidden="true"><path d="M1 3h14v10H1zM15 7h6l4 4v2h-10z" '
+              'fill="currentColor"/><circle cx="6" cy="15" r="2.4" fill="currentColor"/><circle cx="20" cy="15" r="2.4" fill="currentColor"/></svg>',
+    "planta": '<svg width="20" height="18" viewBox="0 0 22 20" aria-hidden="true"><path d="M1 19V9l5 3V9l5 3V9l5 3V2h4v17z" fill="currentColor"/></svg>',
+    "reloj": '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
+             '<circle cx="10" cy="11" r="7"/><path d="M10 11V7M8 2h4"/></svg>',
+    "historial": '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
+                 '<path d="M3 10a7 7 0 1 0 2-5M3 3v3h3M10 6v4l3 2"/></svg>',
+    "tonelada": '<svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
+                '<path d="M3 17h16l-2-10H5zM8 7a3 3 0 0 1 6 0"/></svg>',
+}
+
+
 def tarjetasKpi(tarjetas: list[dict]) -> None:
-    """tarjetas: [{"etiqueta", "valor", "detalle", "destacada"}]; solo una debería ir destacada."""
+    """tarjetas: [{"etiqueta", "valor", "detalle", "destacada", "icono", "ag"}]; solo una debería ir destacada.
+    icono: clave de ICONOS_KPI; ag=True pinta el valor con el color del algoritmo genético."""
     columnas = st.columns(len(tarjetas))
     for columna, t in zip(columnas, tarjetas):
-        clase = "kpi destacada" if t.get("destacada") else "kpi"
+        clase = "kpi" + (" destacada" if t.get("destacada") else "") + (" ag" if t.get("ag") else "")
+        icono = f'<span class="kpi-icono">{ICONOS_KPI[t["icono"]]}</span>' if t.get("icono") else ""
         columna.markdown(
-            f'<div class="{clase}"><div class="kpi-etiqueta">{escape(t["etiqueta"])}</div>'
+            f'<div class="{clase}">{icono}<div class="kpi-etiqueta">{escape(t["etiqueta"])}</div>'
             f'<div class="kpi-valor">{escape(t["valor"])}</div>'
             f'<div class="kpi-detalle">{escape(t.get("detalle", ""))}</div></div>',
             unsafe_allow_html=True,
         )
+
+
+CHIP_LLENA = '<span class="chip">llena</span>'
 
 
 def barrasCapacidad(plantas: list[dict]) -> None:
@@ -46,16 +66,19 @@ def barrasCapacidad(plantas: list[dict]) -> None:
     for p in plantas:
         capacidad = p["capacidad"]
         uso = 0 if capacidad <= 0 else min(100.0, p["usada"] / capacidad * 100)
+        llena = capacidad > 0 and p["usada"] >= capacidad - 1e-6
         if capacidad <= 0:
             estado = "inactiva"
-        elif p["usada"] >= capacidad - 1e-6:
+        elif llena:
             estado = "llena"
         else:
             estado = f"{formatoToneladas(capacidad - p['usada'])} libres"
         html += (
-            f'<div class="barra-capacidad"><div class="fila"><span>{escape(p["nombre"])}</span>'
-            f'<span class="cifra">{formatoToneladas(p["usada"])} / {formatoToneladas(capacidad)} · {estado}</span></div>'
-            f'<div class="pista"><div class="uso" style="width:{uso:.1f}%"></div></div></div>'
+            f'<div class="barra-capacidad"><div class="fila"><span><span class="ico-planta">{ICONOS_KPI["planta"]}</span>'
+            f'{escape(p["nombre"])}{CHIP_LLENA if llena else ""}</span>'
+            f'<span class="cifra">{formatoToneladas(p["usada"])} / {formatoToneladas(capacidad)}'
+            f'{"" if llena else " · " + estado}</span></div>'
+            f'<div class="pista"><div class="uso{" llena" if llena else ""}" style="width:{uso:.1f}%"></div></div></div>'
         )
     st.markdown(html, unsafe_allow_html=True)
 
@@ -63,7 +86,8 @@ def barrasCapacidad(plantas: list[dict]) -> None:
 def rutasCargadas(rutas: list[tuple[str, str, float]], cuantas: int = 3) -> None:
     """rutas: [(origen, destino, toneladas)] ya ordenadas de mayor a menor."""
     html = "".join(
-        f'<div class="ruta-cargada"><span>{escape(o)} → {escape(d)}</span><b>{formatoToneladas(t)}</b></div>'
+        f'<div class="ruta-cargada"><span>{escape(o)} → {escape(d)}</span>'
+        f'<b>{formatoToneladas(t)}<span class="ico-camion">{ICONOS_KPI["camion"]}</span></b></div>'
         for o, d, t in rutas[:cuantas]
     )
     st.markdown(html, unsafe_allow_html=True)
@@ -84,12 +108,14 @@ def encabezado(titulo: str, subtitulo: str = "", textoBoton: Optional[str] = Non
     return derecha.button(textoBoton, type="primary", key=clave, icon=icono, width="stretch")
 
 
-def tarjeta(clave: str, titulo: Optional[str] = None, nota: Optional[str] = None):
-    """Contenedor blanco con borde. Uso: with tarjeta("convergencia", "Título"): ..."""
+def tarjeta(clave: str, titulo: Optional[str] = None, nota: Optional[str] = None, ayuda: Optional[str] = None):
+    """Contenedor blanco con borde. Uso: with tarjeta("convergencia", "Título"): ...
+    ayuda: explicación que aparece al pasar el mouse por el ícono ⓘ junto al título."""
     contenedor = st.container(key=f"tarjeta{clave[0].upper()}{clave[1:]}")
     html = ""
     if titulo:
-        html += f'<p class="titulo-tarjeta">{escape(titulo)}</p>'
+        icono = f' <span class="ayuda" title="{escape(ayuda)}">ⓘ</span>' if ayuda else ""
+        html += f'<p class="titulo-tarjeta">{escape(titulo)}{icono}</p>'
     if nota:
         html += f'<p class="nota-tarjeta">{escape(nota)}</p>'
     if html:
@@ -133,8 +159,8 @@ def tablaResumenComparacion(comparacion: dict, colores: dict) -> None:
     st.markdown(html + "</tbody></table>", unsafe_allow_html=True)
 
 
-ESCALA_AZUL = [(0, "#EEF3F8", "#9AA8A0"), (20, "#b7d3f6", "#17221C"), (35, "#6da7ec", "#0D2A4F"),
-               (50, "#2a78d6", "#FFFFFF"), (float("inf"), "#104281", "#FFFFFF")]
+ESCALA_AZUL = [(0, "#F1F2F7", "#A3A7C2"), (20, "#CBD5EE", "#1A1C33"), (35, "#98ACDB", "#1A1C33"),
+               (50, "#5B79BC", "#FFFFFF"), (float("inf"), "#2B2F6B", "#FFFFFF")]
 
 
 def matrizAsignacion(red: dict, solucion: dict) -> None:
@@ -170,10 +196,9 @@ def matrizAsignacion(red: dict, solucion: dict) -> None:
 
 # ---- barra lateral ----
 
-LOGO = ('<svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1E5B43"/>'
-        '<path d="M11 26c7 0 12-5 14-14 2.5 7 1 13-3.5 16.5-3.5 2.4-7 2.2-10.5-2.5z" fill="none" stroke="#fff" '
-        'stroke-width="2.2" stroke-linejoin="round"/><path d="M14 28.5c2.5-3.6 5-6 8.5-8.2" fill="none" stroke="#fff" '
-        'stroke-width="2.2" stroke-linecap="round"/></svg>')
+LOGO = ('<svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><defs><radialGradient id="solLogo" cx=".5" cy=".7" r=".7">'
+        '<stop offset="0" stop-color="#F7C068"/><stop offset="1" stop-color="#E4572E"/></radialGradient></defs>'
+        '<circle cx="20" cy="20" r="20" fill="url(#solLogo)"/></svg>')
 
 
 def marcaLateral() -> None:

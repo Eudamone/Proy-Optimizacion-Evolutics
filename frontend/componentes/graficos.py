@@ -14,8 +14,8 @@ from componentes.tema import COLORES, formatoMillones, formatoNumero, formatoPes
 
 COLOR_EXACTO = COLORES["exacto"]
 COLOR_AG = COLORES["genetico"]
-COLOR_PLANTA = COLORES["verdeSabana"]
-COLOR_AGRO = COLORES["ocre"]
+COLOR_PLANTA = COLORES["primario"]
+COLOR_AGRO = COLORES["agro"]
 FONDO_TARJETA = "#FFFFFF"  # las gráficas van dentro de tarjetas blancas
 
 pio.templates["despachoLlano"] = go.layout.Template(layout=dict(
@@ -135,7 +135,7 @@ def graficarMapaDespacho(red: dict, solucion: dict, alto: int = 520, rutas: Opti
         if nombre in ETIQUETAS_RIOS:
             x, y = ETIQUETAS_RIOS[nombre]
             fig.add_annotation(x=x, y=y, text=f"<i>{nombre}</i>", showarrow=False,
-                               font=dict(size=12, color="#4F7F8F"))
+                               font=dict(size=12, color="#4A7D88"))
 
     for f in _flujosDibujables(datos, solucion):
         xs, ys, texto = _recorrido(datos, f, curva=True)

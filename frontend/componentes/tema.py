@@ -1,26 +1,30 @@
-"""Tema "Despacho del Llano": colores, tipografías, CSS mínimo y formatos de cifras.
+"""Tema "Atardecer llanero": colores, tipografías, CSS y formatos de cifras.
 
-Los colores salen de la skill de dirección creativa: verde sabana para acciones
-y plantas, ocre para agroempresas, azul río para el método exacto y rojo
-tierra para el algoritmo genético y las rutas.
+Índigo de la noche llanera para la navegación, el indicador principal y las
+plantas; naranja quemado del atardecer para la acción principal, el algoritmo
+genético y las rutas; azul para el método exacto y naranja claro para las
+agroempresas. Al pie de cada pantalla va el paisaje de la red (static/paisajeLlano.png).
 """
 
 import streamlit as st
 
 COLORES = {
-    "fondo": "#EEF2EB",
+    "fondo": "#EEF0F5",
     "superficie": "#FFFFFF",
-    "linea": "#D5DDD2",
-    "tinta": "#1B2620",
-    "tintaSuave": "#55645A",
-    "verdeSabana": "#1E5B43",
-    "ocre": "#D49A2A",
-    "rio": "#9CC2CF",
-    "contorno": "#D6DFD2",
-    "exacto": "#2B78B4",
-    "genetico": "#C2582A",
-    "bien": "#1F7A3E",
-    "bienSuave": "#E1F2E6",
+    "linea": "#DCDFEA",
+    "tinta": "#1A1C33",
+    "tintaSuave": "#5C6080",
+    "primario": "#2B2F6B",
+    "acento": "#E4572E",
+    "agro": "#F2A541",
+    "rio": "#B7C4E0",
+    "contorno": "#DCDFEA",
+    "lateral": "#E6E8F1",
+    "opcion": "#D4D8E8",
+    "exacto": "#3A5BA0",
+    "genetico": "#E4572E",
+    "bien": "#1F7A4A",
+    "bienSuave": "#E1F2E8",
     "alerta": "#9A5B00",
     "alertaSuave": "#FBEFD6",
     "error": "#B42318",
@@ -34,9 +38,17 @@ h1, h2, h3, .titular {{ font-family: 'Bricolage Grotesque', 'Source Sans 3', san
 [data-testid="stMarkdownContainer"] p.titular, .titular {{ font-size: 2.4rem !important; font-weight: 800; line-height: 1.08; color: {COLORES['tinta']}; margin: 0 0 .2rem 0; }}
 [data-testid="stMarkdownContainer"] p.subtitular, .subtitular {{ font-size: 1.1rem !important; color: {COLORES['tintaSuave']}; margin: 0 0 1rem 0; }}
 .cifra, .kpi-valor {{ font-variant-numeric: tabular-nums; }}
-.kpi {{ background: {COLORES['superficie']}; border: 1px solid {COLORES['linea']}; border-radius: 10px;
+.kpi {{ background: {COLORES['superficie']}; border: 1px solid {COLORES['linea']}; border-radius: 14px; transition: transform .15s, box-shadow .15s;
         padding: 14px 16px; height: 100%; }}
-.kpi.destacada {{ border-color: {COLORES['verdeSabana']}; background: #E3EFE7; }}
+.kpi.destacada {{ border: none; background: linear-gradient(135deg, {COLORES['primario']}, #3A3F86); position: relative; overflow: hidden; }}
+.kpi.destacada:after {{ content: ''; position: absolute; right: -40px; bottom: -70px; width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle, #F2A541 0%, rgba(228,87,46,.6) 45%, transparent 70%); opacity: .5; }}
+.kpi.destacada > * {{ position: relative; z-index: 1; }}
+.kpi.destacada .kpi-etiqueta, .kpi.destacada .kpi-detalle {{ color: #D3D5EE; }}
+.kpi:hover {{ transform: translateY(-2px); box-shadow: 0 6px 16px rgba(26,28,51,.08); }}
+.kpi.destacada .kpi-valor {{ color: #FFFFFF; }}
+.kpi-icono {{ float: right; color: #9A9EC4; }} .kpi.destacada .kpi-icono {{ color: #F2A541; position: relative; z-index: 1; }}
+.kpi.ag .kpi-icono, .kpi.ag .kpi-valor {{ color: {COLORES['genetico']}; }}
 .kpi-etiqueta {{ font-size: .9rem; color: {COLORES['tintaSuave']}; }}
 .kpi-valor {{ font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1.9rem; line-height: 1.15;
               color: {COLORES['tinta']}; }}
@@ -49,8 +61,12 @@ h1, h2, h3, .titular {{ font-family: 'Bricolage Grotesque', 'Source Sans 3', san
 .estado b {{ color: {COLORES['tinta']}; }}
 .barra-capacidad {{ display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; font-size: .95rem; }}
 .barra-capacidad .fila {{ display: flex; justify-content: space-between; gap: 8px; }}
-.barra-capacidad .pista {{ height: 8px; background: #DCE3D8; border-radius: 4px; overflow: hidden; }}
-.barra-capacidad .uso {{ height: 8px; background: {COLORES['verdeSabana']}; border-radius: 4px; }}
+.barra-capacidad .pista {{ height: 8px; background: #ECEEF4; border-radius: 5px; overflow: hidden; }}
+.barra-capacidad .uso {{ height: 8px; background: {COLORES['primario']}; border-radius: 4px; }}
+.barra-capacidad .uso.llena {{ background: linear-gradient(90deg, {COLORES['primario']}, {COLORES['acento']}); }}
+.chip {{ font-size: .72rem; font-weight: 700; border-radius: 999px; padding: 1px 8px; margin-left: 6px; background: #FDE7DF; color: #B23F1C; }}
+.ico-planta {{ color: {COLORES['primario']}; margin-right: 7px; vertical-align: -3px; }}
+.ico-camion {{ color: {COLORES['acento']}; margin-left: 8px; vertical-align: -3px; }}
 .ruta-cargada {{ display: flex; justify-content: space-between; gap: 10px; padding: 7px 0;
                  border-bottom: 1px solid {COLORES['linea']}; font-size: .95rem; }}
 .ruta-cargada b {{ font-variant-numeric: tabular-nums; }}
@@ -59,7 +75,25 @@ h1, h2, h3, .titular {{ font-family: 'Bricolage Grotesque', 'Source Sans 3', san
                         color: {COLORES['tintaSuave']}; }}
 /* ---- distribución general ---- */
 .block-container {{ padding-top: 2.2rem !important; padding-bottom: 3rem !important; max-width: 1240px; }}
-[data-testid="stSidebar"] {{ background: #EAF0EC; border-right: 1px solid {COLORES['linea']}; }}
+[data-testid="stSidebar"] {{ background: {COLORES['lateral']}; border-right: 1px solid #D5D8E6; }}
+/* opciones del menú: recuadro más oscuro; la activa en índigo con raya naranja */
+[data-testid="stSidebar"] a[data-testid="stPageLink-NavLink"] {{ background: {COLORES['opcion']}; border: 1px solid #C6CBE0;
+    border-radius: 10px; padding: 9px 12px; margin-bottom: 4px; transition: background .15s, transform .15s; }}
+[data-testid="stSidebar"] a[data-testid="stPageLink-NavLink"]:hover {{ background: #C8CDE2; transform: translateX(2px); }}
+[data-testid="stSidebar"] a[data-testid="stPageLink-NavLink"] span, [data-testid="stSidebar"] a[data-testid="stPageLink-NavLink"] p {{
+    color: {COLORES['primario']} !important; font-weight: 600; }}
+[data-testid="stSidebar"] .st-key-navActiva a[data-testid="stPageLink-NavLink"] {{
+    background: {COLORES['primario']}; border-color: {COLORES['primario']};
+    box-shadow: inset 4px 0 0 {COLORES['acento']}, 0 3px 10px rgba(43,47,107,.25); }}
+[data-testid="stSidebar"] .st-key-navActiva a[data-testid="stPageLink-NavLink"] span, [data-testid="stSidebar"] .st-key-navActiva a[data-testid="stPageLink-NavLink"] p {{
+    color: #FFFFFF !important; }}
+/* botón principal con sombra cálida */
+button[kind="primary"] {{ box-shadow: 0 4px 14px rgba(228,87,46,.32); transition: transform .15s, box-shadow .15s; }}
+button[kind="primary"]:hover {{ transform: translateY(-1px); box-shadow: 0 6px 18px rgba(228,87,46,.4); }}
+/* paisaje de la red al pie del contenido: detrás de las tarjetas, nunca encima */
+[data-testid="stMain"] {{ background: url('app/static/paisajeLlano.png') center bottom / 100% auto no-repeat; }}
+.block-container {{ padding-bottom: 210px !important; }}
+@media (max-height: 700px) {{ [data-testid="stMain"] {{ background-image: none; }} .block-container {{ padding-bottom: 3rem !important; }} }}
 [data-testid="stSidebarHeader"] {{ display: none; }}
 /* barra lateral fija: siempre visible, sin botones para ocultarla ni borde para cambiar su ancho */
 [data-testid="stSidebar"] {{ width: 300px !important; min-width: 300px !important; max-width: 300px !important;
@@ -71,9 +105,10 @@ h1, h2, h3, .titular {{ font-family: 'Bricolage Grotesque', 'Source Sans 3', san
 @media (max-width: 767px) {{ [data-testid="stMain"] {{ margin-left: 300px; max-width: calc(100vw - 300px); }} }}
 /* ---- tarjetas: st.container(key="tarjeta...") ---- */
 [class*="st-key-tarjeta"] {{ background: {COLORES['superficie']}; border: 1px solid {COLORES['linea']};
-    border-radius: 12px; padding: 18px 20px 14px 20px; }}
+    border-radius: 14px; padding: 18px 20px 14px 20px; }}
 .titulo-tarjeta {{ font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1.15rem;
     color: {COLORES['tinta']}; margin: 0 0 .1rem 0; }}
+.ayuda {{ font-family: 'Source Sans 3', sans-serif; font-weight: 400; font-size: .95rem; color: #9A9EC4; cursor: help; }}
 .nota-tarjeta {{ font-size: .9rem; color: {COLORES['tintaSuave']}; margin: 0 0 .4rem 0; }}
 /* ---- encabezado de página ---- */
 [data-testid="stMarkdownContainer"] p.titulo-pagina {{ font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
@@ -94,7 +129,7 @@ h1, h2, h3, .titular {{ font-family: 'Bricolage Grotesque', 'Source Sans 3', san
 /* ---- tablas propias ---- */
 .tabla {{ width: 100%; border-collapse: collapse; font-size: .95rem; font-variant-numeric: tabular-nums; }}
 .tabla th {{ text-align: left; font-weight: 600; color: {COLORES['tintaSuave']}; padding: 8px; border-bottom: 1px solid {COLORES['linea']}; }}
-.tabla td {{ padding: 9px 8px; border-bottom: 1px solid #E4EAE6; }}
+.tabla td {{ padding: 9px 8px; border-bottom: 1px solid #ECEEF4; }}
 .tabla tr:last-child td {{ border-bottom: none; }}
 .tabla .n {{ text-align: right; }}
 .metodo {{ display: inline-flex; gap: 8px; align-items: center; }}

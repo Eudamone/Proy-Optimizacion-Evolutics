@@ -50,18 +50,18 @@ pulsado = encabezado("Sensibilidad", subtitulo, "Simular escenario", clave="boto
 libre = sum((c["rango"]["actual"] if c["rango"] else 0) - c["usada_t"] for c in capacidades)
 alTope = [c for c in capacidades if c["ahorro_por_tonelada"] > 0]
 tarjetasKpi([
-    {"etiqueta": "Costo óptimo actual", "valor": formatoPesos(base["costo_total"]), "detalle": "por semana",
+    {"icono": "ruta", "etiqueta": "Costo óptimo actual", "valor": formatoPesos(base["costo_total"]), "detalle": "por semana",
      "destacada": True},
-    {"etiqueta": "Plantas al tope", "valor": f"{len(alTope)} de {len(capacidades)}",
+    {"icono": "planta", "etiqueta": "Plantas al tope", "valor": f"{len(alTope)} de {len(capacidades)}",
      "detalle": ", ".join(c["nombre"].replace("Planta ", "") for c in alTope) or "ninguna"},
-    {"etiqueta": "Mayor ahorro por tonelada", "valor": formatoPesos(llena["ahorro_por_tonelada"]),
+    {"icono": "tonelada", "etiqueta": "Mayor ahorro por tonelada", "valor": formatoPesos(llena["ahorro_por_tonelada"]),
      "detalle": f"ampliando {llena['nombre'].replace('Planta ', '')}"},
-    {"etiqueta": "Capacidad libre en la red", "valor": formatoToneladas(libre), "detalle": "por semana"},
+    {"icono": "planta", "etiqueta": "Capacidad libre en la red", "valor": formatoToneladas(libre), "detalle": "por semana"},
 ])
 st.write("")
 
 # ---- escenario ----
-with tarjeta("escenario", "Escenario", "Se cambia un dato en varios pasos y se vuelve a resolver en cada uno."):
+with tarjeta("escenario", "Escenario", ayuda="Se cambia un dato en varios pasos y se vuelve a resolver en cada uno."):
     c1, c2, c3, c4 = st.columns([1.3, 1.3, 1.2, 0.8])
     tipoTexto = c1.selectbox("Qué cambia", list(TIPOS))
     tipo, lista = TIPOS[tipoTexto]
@@ -101,7 +101,6 @@ with tarjeta("resultadoEscenario", titulo):
             izquierda, derecha = st.columns([3, 2], gap="medium")
             izquierda.plotly_chart(graficarCostoVsVariacion(pasosEscenario, tipoTexto.lower()), width="stretch",
                                    config={"displayModeBar": False})
-            izquierda.caption("Los puntos huecos marcan los pasos en los que cambian las rutas en uso.")
             derecha.dataframe(pd.DataFrame([{
                 "Variación": f"{p['delta']:+.0f} %",
                 "Costo semanal": formatoPesos(p["costo_total"]) if p["factible"] else "sin solución",
@@ -117,7 +116,7 @@ with izquierda:
         st.plotly_chart(graficarAhorroCapacidad(capacidades), width="stretch", config={"displayModeBar": False})
 with derecha:
     with tarjeta("rangosCapacidad", "Hasta dónde vale ese ahorro",
-                 "Dentro de este rango las rutas óptimas no cambian."):
+                 ayuda="Dentro de este rango las rutas óptimas no cambian."):
         st.dataframe(pd.DataFrame([{
             "Planta": c["nombre"].replace("Planta ", ""), "Usada": formatoToneladas(c["usada_t"]),
             "Capacidad": _toneladas(c["rango"], "actual"), "Desde": _toneladas(c["rango"], "minimo"),
@@ -128,7 +127,7 @@ st.write("")
 # ---- detalle ----
 izquierda, derecha = st.columns(2, gap="medium")
 with izquierda:
-    with tarjeta("ofertas", "Precio sombra por agroempresa", "Cuánto sube el costo si entrega una tonelada más."):
+    with tarjeta("ofertas", "Precio sombra por agroempresa", ayuda="Cuánto sube el costo si entrega una tonelada más."):
         st.dataframe(pd.DataFrame([{
             "Agroempresa": o["nombre"], "Una tonelada más": formatoPesos(o["precio_sombra"]),
             "Desde": _toneladas(o["rango"], "minimo"), "Hasta": _toneladas(o["rango"], "maximo")}
@@ -136,7 +135,7 @@ with izquierda:
             hide_index=True, width="stretch", height=390)
 with derecha:
     with tarjeta("rutas", "Rangos de costo de las rutas",
-                 f"Una ruta sin uso empieza a convenir si su costo baja más que su costo reducido "
+                 ayuda=f"Una ruta sin uso empieza a convenir si su costo baja más que su costo reducido "
                  f"(costo de referencia {formatoMillones(base['costo_total'])})."):
         nombres = {a["id"]: a["nombre"] for a in red["agroempresas"]} | {p["id"]: p["municipio"] for p in red["plantas"]}
         st.dataframe(pd.DataFrame([{
