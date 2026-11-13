@@ -1,9 +1,3 @@
-"""Registro de operadores del AG.
-
-Para agregar un operador nuevo basta con crear su clase y registrarla aquí;
-ni el solver ni los parámetros cambian.
-"""
-
 from typing import Callable
 
 from app.genetico.aleatorio import GeneradorAleatorio

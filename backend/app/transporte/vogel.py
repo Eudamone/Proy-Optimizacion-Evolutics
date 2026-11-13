@@ -1,9 +1,4 @@
-"""ISolucionInicial y MetodoVogel (aproximación de Vogel).
-
-En cada paso se calcula la penalización de cada fila y columna activa (diferencia
-entre sus dos costos más bajos), se elige la línea con mayor penalización y se
-asigna lo máximo posible en su celda más barata.
-"""
+# Vogel: asigna en la celda más barata de la línea con mayor penalización.
 
 from abc import ABC, abstractmethod
 
@@ -14,7 +9,7 @@ from app.transporte.tabla import TablaTransporte
 class ISolucionInicial(ABC):
     @abstractmethod
     def construir(self, inst: InstanciaTransporte) -> TablaTransporte:
-        """Recibe una instancia balanceada y devuelve una tabla básica factible."""
+        ...
 
 
 class MetodoVogel(ISolucionInicial):
@@ -37,8 +32,7 @@ class MetodoVogel(ISolucionInicial):
             oferta[i] -= cantidad
             demanda[j] -= cantidad
 
-            # Si se agotan las dos a la vez, solo se tacha una línea (degeneración):
-            # la otra queda con 0 y recibirá una asignación básica de 0 más adelante.
+            # Si se agotan fila y columna a la vez solo se tacha una (degeneración).
             if oferta[i] <= self.tolerancia and (demanda[j] > self.tolerancia or len(filas) > 1):
                 filas.discard(i)
             else:
@@ -48,7 +42,7 @@ class MetodoVogel(ISolucionInicial):
         return tabla
 
     def penalizaciones(self, inst, filas, columnas) -> tuple[dict, dict]:
-        """Penalización = segundo costo más bajo - costo más bajo de cada línea activa."""
+        """Segundo costo más bajo - costo más bajo de cada línea activa."""
         penFilas = {i: self._diferencia([inst.C[i][j] for j in columnas]) for i in filas}
         penColumnas = {j: self._diferencia([inst.C[i][j] for i in filas]) for j in columnas}
         return penFilas, penColumnas

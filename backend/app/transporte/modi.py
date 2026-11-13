@@ -1,12 +1,4 @@
-"""MetodoMODI e InfoDual (método de multiplicadores o de distribución modificada).
-
-En cada iteración:
-  1. Potenciales: u_i + v_j = c_ij en las celdas básicas.
-  2. Costos reducidos: d_ij = c_ij - u_i - v_j en las no básicas.
-  3. Si todo d_ij >= 0, la tabla es óptima.
-  4. Si no, entra la celda con el d_ij más negativo; se arma su ciclo y se mueve
-     theta = menor asignación de las celdas con signo -. Sale una de esas celdas.
-"""
+# MODI: potenciales, costos reducidos d_ij = c_ij - u_i - v_j y pivoteo hasta que todo d_ij >= 0.
 
 from dataclasses import dataclass, field
 from typing import Optional
@@ -18,8 +10,6 @@ from app.transporte.tabla import TablaTransporte
 
 @dataclass
 class InfoDual:
-    """Información de la tabla óptima que necesita el análisis de sensibilidad."""
-
     u: list[float]                 # potencial de cada fila (incluida la ficticia)
     v: list[float]                 # potencial de cada columna
     d: Matriz                      # costos reducidos (0 en las básicas)
@@ -39,8 +29,7 @@ class MetodoMODI:
     def optimizar(self, tabla: TablaTransporte) -> InfoDual:
         inst = tabla.inst
         n, m = inst.n(), inst.m()
-        # Con fuente ficticia, u = 0 en esa fila: así u_i y v_j se leen directo como
-        # el cambio del costo por tonelada adicional de oferta o de capacidad.
+        # u = 0 en la fila ficticia: u_i y v_j quedan como precios sombra.
         filaReferencia = n - 1 if inst.ficticia == "fila" else 0
         costoInicial = tabla.costo()
         historial = [costoInicial]
@@ -75,7 +64,7 @@ class MetodoMODI:
 
     @staticmethod
     def pivotear(tabla: TablaTransporte, ciclo: list[tuple[Celda, int]]) -> None:
-        """Mueve theta por el ciclo y cambia la base (entra la primera celda, sale una -)."""
+        """Mueve theta por el ciclo: entra la celda nueva y sale una con signo -."""
         negativas = [celda for celda, signo in ciclo if signo < 0]
         theta = min(tabla.x[i][j] for i, j in negativas)
         sale = min((c for c in negativas if tabla.x[c[0]][c[1]] == theta),

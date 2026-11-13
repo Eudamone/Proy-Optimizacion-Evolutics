@@ -1,14 +1,4 @@
-"""AnalizadorSensibilidad: precios sombra, costos reducidos y rangos, leídos del
-tablero óptimo del MODI (sin volver a resolver).
-
-Con la fuente ficticia en u = 0:
-  - u_i: cuánto cambia el costo total si la agroempresa i entrega 1 t más.
-  - v_j: cuánto cambia si la planta j tiene 1 t más de capacidad (<= 0; -v_j es el ahorro).
-  - d_ij: cuánto tendría que bajar c_ij para que la ruta (i, j) empiece a usarse.
-
-Los rangos dicen hasta dónde puede moverse un dato sin que cambie la base óptima
-(las mismas rutas en uso); dentro del rango, los precios sombra siguen valiendo.
-"""
+# Precios sombra, costos reducidos y rangos leídos del tablero óptimo de MODI, sin volver a resolver.
 
 import math
 from dataclasses import dataclass, field
@@ -40,7 +30,6 @@ class ResultadoSensibilidad:
     rangos_capacidad: list[Rango] = field(default_factory=list)
 
     def ahorroPorCapacidad(self) -> list[float]:
-        """Ahorro semanal por cada tonelada adicional de capacidad en cada planta."""
         return [-v if v != 0 else 0.0 for v in self.precio_sombra_capacidad]
 
 
@@ -85,8 +74,7 @@ class AnalizadorSensibilidad:
             # No básica: entra a la base si su costo baja más de d_ij.
             return Rango(actual, actual - dual.d[i][j], math.inf)
 
-        # Básica: si c_ij cambia en delta, cada d_kl cuyo ciclo pasa por (i, j)
-        # cambia en signo * delta, y todos deben seguir >= 0.
+        # Básica: todo d_kl cuyo ciclo pasa por (i, j) cambia en signo * delta y debe seguir >= 0.
         bajada, subida = -math.inf, math.inf
         for (k, l), ciclo in ciclos.items():
             for celdaCiclo, signo in ciclo[1:]:

@@ -1,9 +1,3 @@
-"""EstadoUI: envuelve st.session_state para que las pantallas no usen claves sueltas.
-
-Guarda la red que se está editando, la última comparación, la última
-sensibilidad y los errores que hay que mostrar.
-"""
-
 from typing import Any, Optional
 
 import httpx
@@ -59,7 +53,6 @@ class EstadoUI:
 
     @property
     def versionTablas(self) -> int:
-        """Cambia cuando se recargan las tablas, para que los editores se reinicien."""
         return self._obtener("versionTablas", 0)
 
     def reiniciarTablas(self) -> None:
@@ -114,7 +107,7 @@ class EstadoUI:
     # ---- caché por sesión: cambiar de pantalla no vuelve a pedir lo mismo a la API ----
 
     def enCache(self, clave: str, calcular):
-        """Devuelve el valor guardado o lo calcula una vez (se borra cuando la red cambia)."""
+        """Valor guardado o lo calcula una vez; se borra cuando la red cambia."""
         cache = self._obtener("cache")
         if cache is None:
             cache = {}
@@ -136,11 +129,9 @@ class EstadoUI:
         return self.enCache("sensibilidad", lambda: self.apiSensibilidad.sensibilidad(None))
 
     def rutasCarretera(self) -> dict:
-        """Trazados por carretera ya guardados (no consulta el servicio web)."""
         return self.enCache("rutasCarretera", self.apiRed.rutasCarretera)
 
     def descargarRutasCarretera(self) -> dict:
-        """Pide a la API que consulte OSRM las rutas que faltan y guarda el resultado en la sesión."""
         rutas = self.apiRed.rutasCarretera(descargar=True)
         cache = self._obtener("cache") or {}
         cache["rutasCarretera"] = rutas
@@ -148,7 +139,7 @@ class EstadoUI:
         return rutas
 
     def hayInternet(self) -> bool:
-        """¿Se puede cargar el mapa base de CARTO? Se revisa una vez por sesión."""
+        """¿Carga el mapa base de CARTO? Se revisa una vez por sesión."""
         def probar() -> bool:
             try:
                 return httpx.head(URL_MAPA_BASE, timeout=2.0).status_code < 500

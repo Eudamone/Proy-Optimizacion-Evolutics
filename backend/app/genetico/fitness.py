@@ -1,9 +1,4 @@
-"""FitnessPenalizado: aptitud = 1 / (Z + lambda * exceso de capacidad).
-
-lambda es el costo que se cobra por cada tonelada que supera la capacidad de
-una planta. Si no se da, se usa el doble del costo por tonelada más alto de la
-red: así nunca conviene pasarse de la capacidad.
-"""
+# aptitud = 1 / (1 + Z + lambda * exceso); por defecto lambda = 2 x el costo por tonelada más alto.
 
 from typing import Optional
 

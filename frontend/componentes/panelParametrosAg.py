@@ -1,5 +1,3 @@
-"""PanelParametrosAG: controles del algoritmo genético y del número de corridas."""
-
 import streamlit as st
 
 SELECCIONES = {"Torneo (k = 3)": "torneo", "Ruleta": "ruleta"}

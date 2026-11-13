@@ -1,9 +1,3 @@
-"""ServicioOptimizacion: arma la instancia desde la red guardada, resuelve con un
-método o compara ambos, y registra cada comparación en el historial.
-
-Recibe todas sus dependencias ya creadas (las arma dependencias.py).
-"""
-
 from typing import Callable, Optional
 
 from app.analisis.comparador import Comparacion, Comparador

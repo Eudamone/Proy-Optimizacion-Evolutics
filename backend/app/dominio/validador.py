@@ -1,8 +1,3 @@
-"""ValidadorRed: reglas del negocio que debe cumplir la red antes de optimizar.
-
-Devuelve una lista de mensajes; si está vacía, la red es factible.
-"""
-
 from app.dominio.red import RedLogistica
 
 

@@ -1,5 +1,3 @@
-"""IRedRepository e IEjecucionRepository: lo que los servicios esperan de la capa de datos."""
-
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -20,7 +18,7 @@ class IRedRepository(ABC):
 class IEjecucionRepository(ABC):
     @abstractmethod
     def guardarComparacion(self, comparacion, parametros, corridas: int, detalle: dict) -> int:
-        """Guarda una comparación (Comparacion y ParametrosAG del dominio) y devuelve su id."""
+        """Guarda una comparación y devuelve su id."""
 
     @abstractmethod
     def listar(self, limite: int = 50) -> list[dict]: ...

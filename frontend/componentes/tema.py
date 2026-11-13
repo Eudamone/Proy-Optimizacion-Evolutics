@@ -1,11 +1,3 @@
-"""Tema "Atardecer llanero": colores, tipografías, CSS y formatos de cifras.
-
-Índigo de la noche llanera para la navegación, el indicador principal y las
-plantas; naranja quemado del atardecer para la acción principal, el algoritmo
-genético y las rutas; azul para el método exacto y naranja claro para las
-agroempresas. Al pie de cada pantalla va el paisaje de la red (static/paisajeLlano.png).
-"""
-
 import streamlit as st
 
 COLORES = {

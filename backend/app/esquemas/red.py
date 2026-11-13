@@ -1,5 +1,3 @@
-"""Esquemas de la red y su conversión desde y hacia el dominio."""
-
 from typing import Optional
 
 from pydantic import BaseModel, Field

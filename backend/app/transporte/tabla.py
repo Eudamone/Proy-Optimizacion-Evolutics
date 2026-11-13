@@ -1,14 +1,8 @@
-"""TablaTransporte: asignaciones x, celdas básicas y completarBase() para la
-degeneración (n + m - 1 celdas básicas).
-"""
-
 from app.dominio.instancia import InstanciaTransporte
 from app.dominio.tipos import Celda, matrizCeros
 
 
 class TablaTransporte:
-    """Tabla de una instancia BALANCEADA (sum a = sum b)."""
-
     def __init__(self, inst: InstanciaTransporte):
         self.inst = inst
         self.x = matrizCeros(inst.n(), inst.m())
@@ -25,10 +19,7 @@ class TablaTransporte:
         return self.inst.n() + self.inst.m() - 1
 
     def completarBase(self) -> None:
-        """Si la solución es degenerada (menos de n + m - 1 básicas), agrega celdas con
-        asignación 0 que unan partes desconectadas de la base, empezando por las más baratas.
-        Así la base queda como un árbol y MODI puede calcular todos los potenciales.
-        """
+        """Con degeneración agrega básicas en 0 (las más baratas) hasta tener n + m - 1."""
         n, m = self.inst.n(), self.inst.m()
         padre = list(range(n + m))  # nodos 0..n-1 = filas, n..n+m-1 = columnas
 

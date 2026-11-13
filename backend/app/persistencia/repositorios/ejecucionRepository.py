@@ -1,8 +1,3 @@
-"""EjecucionRepository: guarda las comparaciones y consulta el historial.
-
-Aquí, y solo aquí, se decide cómo una Comparacion del dominio se convierte en una fila.
-"""
-
 from dataclasses import asdict
 from typing import Optional
 

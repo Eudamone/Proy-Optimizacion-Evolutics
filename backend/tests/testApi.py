@@ -1,5 +1,3 @@
-"""Pruebas de la API y la persistencia, con una base SQLite en memoria."""
-
 import pytest
 from fastapi.testclient import TestClient
 

@@ -1,5 +1,3 @@
-"""OptimizacionController: resolver con un método y comparar el exacto con el AG."""
-
 from fastapi import APIRouter, Depends
 
 from app.dependencias import obtenerServicioOptimizacion

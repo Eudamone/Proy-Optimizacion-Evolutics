@@ -1,9 +1,4 @@
-"""Escenarios "¿qué pasa si...?": se cambia un dato en varios pasos y se vuelve a
-resolver con el método exacto en cada uno.
-
-Cada tipo de escenario tiene su modificador; para agregar un tipo nuevo se crea
-su clase y se registra en MODIFICADORES, sin tocar Escenario ni el simulador.
-"""
+# Escenarios ¿qué pasa si...?: cambia un dato en varios pasos y vuelve a resolver en cada uno.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -29,7 +24,7 @@ class IModificador(ABC):
 
     @abstractmethod
     def aplicar(self, inst: InstanciaTransporte, indices: list[int], factor: float) -> None:
-        """Modifica la copia de la instancia que recibe."""
+        ...
 
 
 class ModificadorCostoTransporte(IModificador):
@@ -91,7 +86,6 @@ class Escenario:
         return [round(self.delta_min + k * paso, 10) for k in range(self.pasos)]
 
     def aplicar(self, inst: InstanciaTransporte, delta: float) -> InstanciaTransporte:
-        """Copia de la instancia con el cambio aplicado (delta en %)."""
         if self.modificador.unPasoSolo and self.objetivo is None:
             raise ValueError("Para este escenario hay que indicar a qué planta se aplica.")
         nueva = inst.conCambios()

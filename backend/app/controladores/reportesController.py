@@ -1,5 +1,3 @@
-"""ReportesController: historial de comparaciones guardadas."""
-
 from fastapi import APIRouter, Depends, Query
 
 from app.dependencias import obtenerServicioReportes

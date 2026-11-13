@@ -1,6 +1,4 @@
-"""SolverTransporte (implementa ISolver): balancear -> Vogel -> MODI -> quitar la
-ficticia -> SolucionExacta con InfoDual.
-"""
+# Método exacto: balancear -> Vogel -> MODI -> quitar la ficticia.
 
 import time
 

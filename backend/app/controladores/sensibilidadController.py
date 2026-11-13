@@ -1,5 +1,3 @@
-"""SensibilidadController: precios sombra, rangos y escenarios sobre la red actual."""
-
 from fastapi import APIRouter, Depends
 
 from app.dependencias import obtenerServicioSensibilidad

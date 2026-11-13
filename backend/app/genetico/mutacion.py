@@ -1,5 +1,3 @@
-"""IMutacion, MutacionUniforme y MutacionPoda."""
-
 from abc import ABC, abstractmethod
 
 from app.genetico.aleatorio import GeneradorAleatorio
@@ -9,12 +7,10 @@ from app.genetico.cromosoma import Cromosoma
 class IMutacion(ABC):
     @abstractmethod
     def mutar(self, c: Cromosoma) -> None:
-        """Modifica los genes del cromosoma en el mismo objeto."""
+        ...
 
 
 class MutacionUniforme(IMutacion):
-    """Cada gen, con probabilidad p, se reemplaza por un valor al azar en [0, 1]."""
-
     def __init__(self, rng: GeneradorAleatorio, prob: float):
         self.rng = rng
         self.prob = prob
@@ -26,11 +22,7 @@ class MutacionUniforme(IMutacion):
 
 
 class MutacionPoda(IMutacion):
-    """Cada gen, con probabilidad p, se poda a 0 (mitad de las veces) o toma un valor al azar.
-
-    Podar cierra rutas: así aparecen repartos que usan pocas rutas, como las
-    soluciones óptimas del modelo de transporte.
-    """
+    """Con probabilidad p el gen pasa a 0 (cierra la ruta) la mitad de las veces; si no, toma un valor al azar."""
 
     def __init__(self, rng: GeneradorAleatorio, prob: float):
         self.rng = rng

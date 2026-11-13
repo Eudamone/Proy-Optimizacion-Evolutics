@@ -1,5 +1,3 @@
-"""ISeleccion, SeleccionTorneo y SeleccionRuleta."""
-
 from abc import ABC, abstractmethod
 
 from app.genetico.aleatorio import GeneradorAleatorio
@@ -9,12 +7,10 @@ from app.genetico.cromosoma import Cromosoma, Poblacion
 class ISeleccion(ABC):
     @abstractmethod
     def seleccionar(self, pob: Poblacion) -> Cromosoma:
-        """Elige un padre (se devuelve el mismo objeto; quien lo use debe copiarlo)."""
+        """Devuelve el mismo objeto; quien lo use debe copiarlo."""
 
 
 class SeleccionTorneo(ISeleccion):
-    """Toma k individuos al azar y gana el de mayor aptitud."""
-
     def __init__(self, rng: GeneradorAleatorio, k: int = 3):
         self.rng = rng
         self.k = k
@@ -25,8 +21,6 @@ class SeleccionTorneo(ISeleccion):
 
 
 class SeleccionRuleta(ISeleccion):
-    """Probabilidad de ser elegido proporcional a la aptitud."""
-
     def __init__(self, rng: GeneradorAleatorio):
         self.rng = rng
 

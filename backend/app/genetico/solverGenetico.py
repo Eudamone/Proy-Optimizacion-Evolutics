@@ -1,13 +1,4 @@
-"""AlgoritmoGeneticoSolver (implementa ISolver).
-
-1. Población inicial: genes al azar en [0, 1], la mitad en 0 (repartos con pocas rutas).
-2. Cada generación: pasan los `elitismo` mejores sin cambios; el resto nace de
-   selección -> cruce (con probabilidad p_cruce) -> mutación.
-3. Al final se decodifica el mejor individuo y se arma la SolucionGenetica.
-
-Los operadores se reciben ya creados (la fábrica los arma); si no llegan, se
-crean desde el registro de operadores según los parámetros.
-"""
+# Cada generación: pasa la élite y el resto nace de selección -> cruce -> mutación.
 
 import time
 from typing import Optional

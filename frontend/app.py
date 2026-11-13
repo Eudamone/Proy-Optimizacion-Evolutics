@@ -1,10 +1,4 @@
-"""Punto de entrada de la capa de presentación (Streamlit).
-
-Arma la barra lateral (marca, menú de las cuatro pantallas y resumen de la red
-activa) y ejecuta la pantalla elegida.
-
-Ejecutar desde la carpeta frontend (con la API corriendo):  streamlit run app.py
-"""
+# Ejecutar desde frontend, con la API corriendo: streamlit run app.py
 
 import streamlit as st
 

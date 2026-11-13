@@ -1,17 +1,4 @@
-"""Rutas por carretera entre agroempresas y plantas: servicio web OSRM y su caché en JSON.
-
-OSRM (Open Source Routing Machine) es un servicio público y gratuito, con datos de
-OpenStreetMap, que devuelve el trazado por carretera, la distancia y la duración entre
-dos puntos. Aquí solo se usa para dibujar el mapa: el modelo de transporte sigue
-usando las distancias de la red.
-
-Los trazados quedan guardados en datos/semilla/rutasCarretera.json, así el mapa
-muestra las carreteras aunque no haya internet.
-
-Variables de entorno:
-  ECORESIDUOS_OSRM   URL del servidor OSRM (por defecto el servidor público)
-  ECORESIDUOS_RUTAS  archivo de la caché (por defecto datos/semilla/rutasCarretera.json)
-"""
+# Trazados por carretera de OSRM, guardados en datos/semilla/rutasCarretera.json para usarlos sin internet.
 
 import json
 import os
@@ -40,19 +27,16 @@ class RutaCarretera:
 
 
 class SinConexion(Exception):
-    """El servicio de rutas no respondió (sin internet, caído o bloqueado)."""
+    pass
 
 
 class IProveedorRutas(ABC):
     @abstractmethod
     def trazar(self, origen: Punto, destino: Punto) -> Optional[RutaCarretera]:
-        """Trazado por carretera; None si no hay carretera entre los puntos. Lanza SinConexion."""
+        """None si no hay carretera entre los puntos; lanza SinConexion si no hay internet."""
 
 
 class ProveedorOsrm(IProveedorRutas):
-    """Cliente del servicio /route de OSRM. Tras un fallo de conexión no vuelve a
-    intentar durante `esperaTrasFallo` segundos, para no demorar cada petición sin internet."""
-
     def __init__(self, urlBase: str = URL_OSRM, tiempoMaximo: float = 6.0, esperaTrasFallo: float = 15.0):
         self.urlBase = urlBase.rstrip("/")
         self.tiempoMaximo = tiempoMaximo
@@ -80,8 +64,6 @@ class ProveedorOsrm(IProveedorRutas):
 
 
 class CacheRutas:
-    """Trazados ya descargados, por par de coordenadas (si se mueve un punto, se vuelve a trazar)."""
-
     def __init__(self, archivo: Path = ARCHIVO_RUTAS):
         self.archivo = Path(archivo)
         self._rutas: Optional[dict] = None

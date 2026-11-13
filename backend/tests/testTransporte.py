@@ -1,5 +1,3 @@
-"""Pruebas del método exacto: Vogel, MODI y comparación con ejercicios resueltos a mano."""
-
 import random
 
 import pytest
@@ -13,7 +11,7 @@ from app.transporte.vogel import MetodoVogel
 
 
 def ejercicioClasico() -> InstanciaTransporte:
-    """Ejercicio de libro balanceado: Vogel da 779 y el óptimo es 743."""
+    """Ejercicio de libro: Vogel da 779 y el óptimo es 743."""
     return InstanciaTransporte(
         fuentes=["F1", "F2", "F3"],
         plantas=["D1", "D2", "D3", "D4"],
@@ -26,7 +24,6 @@ def ejercicioClasico() -> InstanciaTransporte:
 
 
 def verificarOptimalidad(sol, tolerancia=1e-6):
-    """Condición de óptimo: ningún costo reducido negativo."""
     escala = max(1.0, max(abs(x) for fila in sol.dual.d for x in fila))
     assert min(min(fila) for fila in sol.dual.d) >= -tolerancia * escala
 

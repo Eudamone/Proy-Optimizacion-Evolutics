@@ -1,10 +1,3 @@
-"""Pantalla "Resolver y comparar".
-
-Método exacto (Vogel + MODI) contra varias corridas del algoritmo genético:
-indicadores, convergencia, costo por corrida, asignación óptima, mapa de rutas
-y resumen de la comparación.
-"""
-
 from datetime import datetime
 
 import streamlit as st
@@ -24,7 +17,6 @@ MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto
 
 
 def _notaFuentes(rutas, tipoMapa: str) -> str:
-    """De dónde salen el fondo y los trazados, y qué falta si no hay conexión."""
     fondo = "Mapa base: CARTO y OpenStreetMap. " if tipoMapa == "Mapa real" else ""
     if rutas is None:
         return fondo + "No se pudieron leer los trazados por carretera: las rutas van sin seguir las carreteras."

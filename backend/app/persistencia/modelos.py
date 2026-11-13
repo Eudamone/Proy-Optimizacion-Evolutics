@@ -1,5 +1,3 @@
-"""Tablas ORM: agroempresas, plantas, rutas, parametros y ejecuciones."""
-
 from datetime import datetime
 from typing import Optional
 

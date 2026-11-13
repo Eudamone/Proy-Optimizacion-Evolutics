@@ -1,5 +1,3 @@
-"""Esquemas de optimización: parámetros del AG, soluciones y comparación."""
-
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field

@@ -1,5 +1,3 @@
-"""Titulares, avisos de estado, tarjetas KPI, barras de capacidad y rutas más cargadas."""
-
 from html import escape
 from typing import Optional
 
@@ -9,7 +7,6 @@ from componentes.tema import ICONOS, formatoToneladas
 
 
 def mostrarTitular(titular: str, subtitulo: Optional[str] = None) -> None:
-    """Cada pantalla abre con un titular que cuenta el resultado."""
     html = f'<p class="titular">{escape(titular)}</p>'
     if subtitulo:
         html += f'<p class="subtitular">{escape(subtitulo)}</p>'
@@ -17,7 +14,7 @@ def mostrarTitular(titular: str, subtitulo: Optional[str] = None) -> None:
 
 
 def mostrarEstado(tipo: str, titulo: str, detalle: str = "") -> None:
-    """tipo: bien, alerta o error. Siempre con ícono y texto, no solo color."""
+    """tipo: bien, alerta o error."""
     texto = f"<b>{escape(titulo)}</b> {escape(detalle)}" if detalle else f"<b>{escape(titulo)}</b>"
     st.markdown(f'<div class="estado {tipo}">{ICONOS[tipo]}<span>{texto}</span></div>', unsafe_allow_html=True)
 
@@ -43,8 +40,7 @@ ICONOS_KPI = {
 
 
 def tarjetasKpi(tarjetas: list[dict]) -> None:
-    """tarjetas: [{"etiqueta", "valor", "detalle", "destacada", "icono", "ag"}]; solo una debería ir destacada.
-    icono: clave de ICONOS_KPI; ag=True pinta el valor con el color del algoritmo genético."""
+    """Cada tarjeta: etiqueta, valor, detalle, destacada, icono y ag (valor en color del AG)."""
     columnas = st.columns(len(tarjetas))
     for columna, t in zip(columnas, tarjetas):
         clase = "kpi" + (" destacada" if t.get("destacada") else "") + (" ag" if t.get("ag") else "")
@@ -61,7 +57,6 @@ CHIP_LLENA = '<span class="chip">llena</span>'
 
 
 def barrasCapacidad(plantas: list[dict]) -> None:
-    """plantas: [{"nombre", "usada", "capacidad"}] -> "140 / 140 t · llena"."""
     html = ""
     for p in plantas:
         capacidad = p["capacidad"]
@@ -84,7 +79,6 @@ def barrasCapacidad(plantas: list[dict]) -> None:
 
 
 def rutasCargadas(rutas: list[tuple[str, str, float]], cuantas: int = 3) -> None:
-    """rutas: [(origen, destino, toneladas)] ya ordenadas de mayor a menor."""
     html = "".join(
         f'<div class="ruta-cargada"><span>{escape(o)} → {escape(d)}</span>'
         f'<b>{formatoToneladas(t)}<span class="ico-camion">{ICONOS_KPI["camion"]}</span></b></div>'
@@ -97,7 +91,7 @@ def rutasCargadas(rutas: list[tuple[str, str, float]], cuantas: int = 3) -> None
 
 def encabezado(titulo: str, subtitulo: str = "", textoBoton: Optional[str] = None, clave: str = "accion",
                icono: Optional[str] = None) -> bool:
-    """Título a la izquierda y la acción principal de la pantalla a la derecha. Devuelve True si se pulsa."""
+    """Devuelve True si se pulsa el botón."""
     if textoBoton is None:
         st.markdown(f'<p class="titulo-pagina">{escape(titulo)}</p><p class="sub-pagina">{escape(subtitulo)}</p>',
                     unsafe_allow_html=True)
@@ -109,8 +103,7 @@ def encabezado(titulo: str, subtitulo: str = "", textoBoton: Optional[str] = Non
 
 
 def tarjeta(clave: str, titulo: Optional[str] = None, nota: Optional[str] = None, ayuda: Optional[str] = None):
-    """Contenedor blanco con borde. Uso: with tarjeta("convergencia", "Título"): ...
-    ayuda: explicación que aparece al pasar el mouse por el ícono ⓘ junto al título."""
+    """Contenedor blanco con título; ayuda aparece al pasar el mouse por el ícono ⓘ."""
     contenedor = st.container(key=f"tarjeta{clave[0].upper()}{clave[1:]}")
     html = ""
     if titulo:
@@ -130,7 +123,6 @@ def estadoVacio(texto: str) -> None:
 # ---- tablas propias ----
 
 def tablaResumenComparacion(comparacion: dict, colores: dict) -> None:
-    """Exacto, mejor del AG y promedio del AG: costo, gap, desviación, tiempo y restricciones."""
     from componentes.tema import formatoMillones, formatoNumero, formatoPesos, formatoPorcentaje
 
     exacta, ag = comparacion["exacta"], comparacion["mejor_genetica"]
@@ -164,7 +156,6 @@ ESCALA_AZUL = [(0, "#F1F2F7", "#A3A7C2"), (20, "#CBD5EE", "#1A1C33"), (35, "#98A
 
 
 def matrizAsignacion(red: dict, solucion: dict) -> None:
-    """Toneladas x_ij como tabla de calor de un solo tono (más oscuro, más toneladas)."""
     plantas = red["plantas"]
     toneladas = {(f["agroempresa_id"], f["planta_id"]): f["toneladas"] for f in solucion["flujos"]}
     maximo = max(toneladas.values(), default=0)

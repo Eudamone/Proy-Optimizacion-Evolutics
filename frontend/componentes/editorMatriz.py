@@ -1,7 +1,3 @@
-"""EditorMatriz: tablas editables (st.data_editor) de agroempresas, plantas y la
-matriz de distancias, y la conversión de vuelta al JSON de la red.
-"""
-
 import math
 from typing import Optional
 
@@ -65,10 +61,6 @@ def editarPlantas(df: pd.DataFrame, clave: str) -> pd.DataFrame:
 
 def editarRutas(agroempresas: pd.DataFrame, plantas: pd.DataFrame, distancias: dict, habilitadas: dict,
                 clave: str) -> tuple[dict, dict]:
-    """Matriz agroempresa x planta. Cada celda: distancia en km; aparte, qué rutas están habilitadas.
-
-    Devuelve los diccionarios actualizados con lo que editó el analista.
-    """
     idsAgro = [i for i in agroempresas["id"].tolist() if isinstance(i, str) and i]
     idsPlanta = [i for i in plantas["id"].tolist() if isinstance(i, str) and i]
     nombres = dict(zip(agroempresas["id"], agroempresas["nombre"]))

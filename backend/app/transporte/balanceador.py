@@ -1,9 +1,4 @@
-"""Balanceador: agrega una fuente ficticia con costo 0 para que sum a = sum b,
-y la quita de la solución final.
-
-La capacidad de las plantas suele ser mayor que la oferta: la fuente ficticia
-"envía" la capacidad que sobra, sin costo.
-"""
+# Agrega una fuente ficticia de costo 0 para que la oferta iguale la capacidad.
 
 from app.dominio.instancia import InstanciaTransporte
 from app.dominio.tipos import Matriz
@@ -32,7 +27,6 @@ class Balanceador:
         )
 
     def quitarFicticia(self, tabla: TablaTransporte) -> Matriz:
-        """Devuelve x sin la fila ficticia (tamaño original n x m)."""
         x = [list(fila) for fila in tabla.x]
         if tabla.inst.ficticia == "fila":
             x = x[:-1]

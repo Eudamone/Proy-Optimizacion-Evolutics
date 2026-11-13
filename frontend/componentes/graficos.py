@@ -1,9 +1,3 @@
-"""Gráficos con Plotly en el estilo "Despacho del Llano".
-
-Reglas: método exacto siempre azul río, algoritmo genético siempre rojo tierra,
-un solo eje Y por gráfica, unidades en los ejes y tooltip en todo.
-"""
-
 import math
 from typing import Optional
 
@@ -48,7 +42,6 @@ POSICION_ETIQUETA = {"Restrepo": "top left", "Villavicencio": "bottom left", "Gr
 # ---- mapa de despacho ----
 
 def _curva(x1, y1, x2, y2, puntos=24, curvatura=0.18):
-    """Curva suave entre dos puntos (para que las rutas no se tapen entre sí)."""
     mx, my = (x1 + x2) / 2, (y1 + y2) / 2
     cx, cy = mx - (y2 - y1) * curvatura, my + (x2 - x1) * curvatura
     xs, ys = [], []
@@ -60,7 +53,6 @@ def _curva(x1, y1, x2, y2, puntos=24, curvatura=0.18):
 
 
 def _posicionesAgroempresas(agroempresas: list[dict], plantas: list[dict]) -> dict[str, tuple[float, float]]:
-    """Separa un poco la agroempresa de la planta cuando están en el mismo municipio."""
     posiciones = {}
     for a in agroempresas:
         lon, lat = a.get("lon"), a.get("lat")
@@ -74,7 +66,6 @@ def _posicionesAgroempresas(agroempresas: list[dict], plantas: list[dict]) -> di
 
 
 def _datosMapa(red: dict, solucion: dict, rutas: Optional[dict]) -> dict:
-    """Posiciones, nombres, toneladas por planta y trazados por carretera, comunes a los dos mapas."""
     agroempresas, plantas = red["agroempresas"], red["plantas"]
     usada: dict[str, float] = {}
     for f in solucion["flujos"]:
@@ -94,7 +85,6 @@ def _duracion(minutos: float) -> str:
 
 
 def _recorrido(datos: dict, flujo: dict, curva: bool) -> tuple[list[float], list[float], str]:
-    """Puntos (lon, lat) de una ruta: por carretera si hay trazado; si no, curva o recta."""
     aid, pid = flujo["agroempresa_id"], flujo["planta_id"]
     (x1, y1), (x2, y2) = datos["posAgro"][aid], datos["posPlanta"][pid]
     tramo = datos["tramos"].get((aid, pid))
@@ -122,8 +112,7 @@ def _grosor(toneladas: float) -> float:
 
 
 def graficarMapaDespacho(red: dict, solucion: dict, alto: int = 520, rutas: Optional[dict] = None) -> go.Figure:
-    """Mapa esquemático (funciona sin internet): ríos de referencia, agroempresas (círculos ocres),
-    plantas (cuadros verdes) y rutas con grosor según toneladas; por carretera si hay trazado."""
+    """Mapa esquemático: funciona sin internet."""
     agroempresas, plantas = red["agroempresas"], red["plantas"]
     datos = _datosMapa(red, solucion, rutas)
     posAgro, posPlanta, usada = datos["posAgro"], datos["posPlanta"], datos["usada"]
@@ -181,9 +170,7 @@ POSICION_ETIQUETA_REAL = {"Restrepo": "top left", "Villavicencio": "bottom left"
 
 
 def graficarMapaReal(red: dict, solucion: dict, rutas: Optional[dict] = None, alto: int = 520) -> go.Figure:
-    """Mapa real del Meta (mapa base de CARTO con datos de OpenStreetMap; necesita internet).
-    Mismas marcas que el esquemático: rutas por carretera con grosor según toneladas,
-    agroempresas ocres según oferta y plantas verdes con su capacidad usada."""
+    """Mapa real con fondo de CARTO / OpenStreetMap: necesita internet."""
     agroempresas, plantas = red["agroempresas"], red["plantas"]
     datos = _datosMapa(red, solucion, rutas)
     posAgro, posPlanta, usada = datos["posAgro"], datos["posPlanta"], datos["usada"]
@@ -253,7 +240,7 @@ def graficarConvergencia(mejorCosto: list[float], costoPromedio: list[float], zE
 
 
 def graficarCorridas(costosAg: list[float], semillas: list[int], zExacto: float) -> go.Figure:
-    """Puntos y no barras: el eje no empieza en 0 y una barra cortada exagera las diferencias."""
+    """Puntos y no barras: el eje no empieza en 0."""
     fig = go.Figure()
     fig.add_scatter(x=[str(s) for s in semillas], y=[c / 1e6 for c in costosAg], mode="markers",
                     name="Corrida del algoritmo genético",
@@ -269,7 +256,6 @@ def graficarCorridas(costosAg: list[float], semillas: list[int], zExacto: float)
 
 
 def graficarReglaCercania(gaps: list[float]) -> go.Figure:
-    """El óptimo en 0 y los gaps del AG: mejor, promedio y peor."""
     mejor, promedio, peor = min(gaps), sum(gaps) / len(gaps), max(gaps)
     tope = max(peor * 1.25, 0.5)
     fig = go.Figure()

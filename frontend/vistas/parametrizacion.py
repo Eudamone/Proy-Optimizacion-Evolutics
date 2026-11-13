@@ -1,8 +1,3 @@
-"""Pantalla "Parametrización": agroempresas, plantas, distancias y parámetros.
-
-Los cambios solo se guardan al pulsar "Guardar red"; la API los valida antes de aceptarlos.
-"""
-
 import pandas as pd
 import streamlit as st
 

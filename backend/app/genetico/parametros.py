@@ -1,5 +1,3 @@
-"""ParametrosAG: configuración del algoritmo genético."""
-
 from dataclasses import dataclass
 from typing import Optional
 

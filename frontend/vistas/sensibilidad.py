@@ -1,9 +1,3 @@
-"""Pantalla "Sensibilidad".
-
-Precios sombra de la solución óptima y simulación de escenarios: se cambia un
-dato en varios pasos y se vuelve a resolver en cada uno.
-"""
-
 import pandas as pd
 import streamlit as st
 
@@ -23,7 +17,6 @@ TIPOS = {
 
 
 def _toneladas(rango, campo: str) -> str:
-    """Valor de un rango en toneladas; sin rango o sin tope se lee "sin límite"."""
     if not rango or rango[campo] is None:
         return "sin límite" if campo == "maximo" else "—"
     return formatoToneladas(rango[campo])

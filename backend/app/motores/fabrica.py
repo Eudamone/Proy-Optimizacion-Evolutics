@@ -1,9 +1,3 @@
-"""SolverFactory: único lugar que conoce las clases concretas de los métodos.
-
-Cada método se registra con un creador; para agregar uno nuevo se registra
-sin modificar la fábrica (registrar("otro", creador)).
-"""
-
 from typing import Callable, Optional
 
 from app.motores.interfaces import ISolver

@@ -1,5 +1,3 @@
-"""ServicioReportes: consulta el historial de comparaciones guardadas."""
-
 from app.persistencia.repositorios.interfaces import IEjecucionRepository
 from app.servicios.errores import NoEncontrado
 

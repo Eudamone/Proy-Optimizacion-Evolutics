@@ -1,5 +1,3 @@
-"""RedRepository: obtenerRed() y guardar(red) sobre las tablas de SQLite."""
-
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
@@ -37,7 +35,6 @@ class RedRepository(IRedRepository):
         return RedLogistica(agroempresas, plantas, rutas, parametros)
 
     def guardar(self, red: RedLogistica) -> None:
-        """Reemplaza la red completa (es pequeña: borrar e insertar es lo más simple)."""
         for modelo in (RutaModelo, AgroempresaModelo, PlantaModelo, ParametrosModelo):
             self.sesion.execute(delete(modelo))
         self.sesion.add_all(

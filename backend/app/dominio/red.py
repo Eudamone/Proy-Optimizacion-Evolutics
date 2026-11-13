@@ -1,7 +1,3 @@
-"""Red logística de EcoResiduos: agroempresas (fuentes), plantas (destinos),
-rutas entre ellas y parámetros económicos.
-"""
-
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -10,8 +6,6 @@ from app.dominio.tipos import TipoResiduo
 
 @dataclass
 class Agroempresa:
-    """Fuente de residuos. La oferta está en toneladas por semana."""
-
     id: str
     nombre: str
     municipio: str
@@ -23,8 +17,6 @@ class Agroempresa:
 
 @dataclass
 class Planta:
-    """Planta de procesamiento. Capacidad en t/semana y costo de operación en $/t."""
-
     id: str
     nombre: str
     municipio: str
@@ -37,8 +29,6 @@ class Planta:
 
 @dataclass
 class Ruta:
-    """Conexión agroempresa -> planta. Si no está habilitada, su costo será Gran M."""
-
     agroempresa_id: str
     planta_id: str
     distancia_km: float
@@ -47,8 +37,6 @@ class Ruta:
 
 @dataclass
 class ParametrosEconomicos:
-    """Tarifa de transporte en $/(t·km) y penalización Gran M para rutas bloqueadas."""
-
     tarifa_t_km: Optional[float] = None
     precio_tonelada: Optional[float] = None
     gran_m: float = 1e8
@@ -56,8 +44,6 @@ class ParametrosEconomicos:
 
 @dataclass
 class RedLogistica:
-    """Agrupa toda la red. Las rutas forman una matriz completa agroempresa x planta."""
-
     agroempresas: list[Agroempresa] = field(default_factory=list)
     plantas: list[Planta] = field(default_factory=list)
     rutas: list[Ruta] = field(default_factory=list)
@@ -90,7 +76,6 @@ class RedLogistica:
         return sum(a.oferta_t for a in self.agroempresas)
 
     def totalCapacidad(self) -> float:
-        """Capacidad semanal de las plantas activas."""
         return sum(p.capacidad_t for p in self.plantas if p.activa)
 
     def plantasActivas(self) -> list[Planta]:
@@ -99,7 +84,6 @@ class RedLogistica:
     # ---- cambios ----
 
     def agregarAgroempresa(self, agroempresa: Agroempresa, distancias: list[float]) -> None:
-        """Agrega una agroempresa con una distancia por planta, en el orden de `plantas`."""
         if any(a.id == agroempresa.id for a in self.agroempresas):
             raise ValueError(f"Ya existe la agroempresa {agroempresa.id}")
         if len(distancias) != len(self.plantas):
@@ -111,7 +95,6 @@ class RedLogistica:
             self.rutas.append(Ruta(agroempresa.id, planta.id, float(d)))
 
     def agregarPlanta(self, planta: Planta, distancias: list[float]) -> None:
-        """Agrega una planta con una distancia por agroempresa, en el orden de `agroempresas`."""
         if any(p.id == planta.id for p in self.plantas):
             raise ValueError(f"Ya existe la planta {planta.id}")
         if len(distancias) != len(self.agroempresas):
@@ -123,13 +106,11 @@ class RedLogistica:
             self.rutas.append(Ruta(agro.id, planta.id, float(d)))
 
     def quitarPlanta(self, plantaId: str) -> None:
-        """Elimina la planta y todas sus rutas."""
         self.planta(plantaId)
         self.plantas = [p for p in self.plantas if p.id != plantaId]
         self.rutas = [r for r in self.rutas if r.planta_id != plantaId]
 
     def quitarAgroempresa(self, agroempresaId: str) -> None:
-        """Elimina la agroempresa y todas sus rutas."""
         self.agroempresa(agroempresaId)
         self.agroempresas = [a for a in self.agroempresas if a.id != agroempresaId]
         self.rutas = [r for r in self.rutas if r.agroempresa_id != agroempresaId]

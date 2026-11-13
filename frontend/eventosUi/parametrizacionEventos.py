@@ -1,8 +1,3 @@
-"""Eventos de la pantalla Red: guardar, restablecer e importar CSV.
-
-No tienen lógica de negocio: llaman a la API y dejan el resultado en el estado.
-"""
-
 import io
 
 import pandas as pd
@@ -43,7 +38,6 @@ def restablecerRed(estado: EstadoUI) -> None:
 
 
 def leerCsv(archivo, columnasRequeridas: list[str]) -> pd.DataFrame:
-    """Lee un CSV subido y revisa que tenga las columnas que se esperan."""
     df = pd.read_csv(io.BytesIO(archivo.getvalue()))
     faltan = [c for c in columnasRequeridas if c not in df.columns]
     if faltan:

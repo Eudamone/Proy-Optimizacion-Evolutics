@@ -1,5 +1,3 @@
-"""ServicioRed: consulta y actualiza la red; la valida antes de guardarla."""
-
 from typing import Callable
 
 from app.dominio.red import RedLogistica
@@ -22,7 +20,6 @@ class ServicioRed:
         return self.validador.validar(red)
 
     def actualizarRed(self, red: RedLogistica) -> RedLogistica:
-        """Guarda la red solo si cumple todas las reglas."""
         errores = self.validador.validar(red)
         if errores:
             raise ErrorNegocio(errores)
@@ -30,7 +27,6 @@ class ServicioRed:
         return red
 
     def restablecer(self) -> RedLogistica:
-        """Vuelve a los datos de prueba."""
         red = self.fuenteSemilla()
         self.repositorio.guardar(red)
         return red

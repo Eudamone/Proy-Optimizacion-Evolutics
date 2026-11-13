@@ -1,9 +1,4 @@
-"""Configuración: ruta de la base de datos y orígenes permitidos para la interfaz.
-
-Se puede cambiar con variables de entorno:
-  ECORESIDUOS_DB    URL de SQLAlchemy (por defecto sqlite en backend/datos/ecoresiduos.db)
-  ECORESIDUOS_CORS  orígenes separados por coma (por defecto la interfaz de Streamlit)
-"""
+# Se configura con las variables de entorno ECORESIDUOS_DB y ECORESIDUOS_CORS.
 
 import os
 from dataclasses import dataclass, field

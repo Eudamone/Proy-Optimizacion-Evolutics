@@ -1,5 +1,3 @@
-"""Esquemas de reportes: historial de comparaciones guardadas."""
-
 from datetime import datetime
 from typing import Any, Optional
 

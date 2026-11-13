@@ -1,12 +1,4 @@
-"""Descarga de una vez el trazado por carretera de todas las rutas (necesita internet).
-
-Ejecutar desde la carpeta backend, antes de una presentación sin conexión:
-    python descargarRutas.py
-
-Usa la red guardada en la base de datos (o los datos de prueba si está vacía) y deja
-los trazados en datos/semilla/rutasCarretera.json. Tarda alrededor de un minuto la
-primera vez; luego solo pide lo que falte.
-"""
+# Descarga los trazados de todas las rutas (necesita internet): python descargarRutas.py
 
 from app.infraestructura.configuracion import obtenerConfiguracion
 from app.infraestructura.rutasCarretera import ARCHIVO_RUTAS, CacheRutas, ProveedorOsrm

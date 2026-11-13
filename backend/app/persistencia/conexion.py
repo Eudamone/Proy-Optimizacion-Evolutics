@@ -1,9 +1,3 @@
-"""Motor y sesión de SQLAlchemy.
-
-La aplicación llama a configurarBaseDatos(url) al iniciar; las pruebas usan
-una base en memoria ("sqlite://").
-"""
-
 from typing import Iterator, Optional
 
 from sqlalchemy import create_engine
@@ -21,7 +15,6 @@ _fabricaSesiones: Optional[sessionmaker] = None
 
 
 def configurarBaseDatos(url: str) -> Engine:
-    """Crea el motor, las tablas y la fábrica de sesiones."""
     global _motor, _fabricaSesiones
     opciones = {"connect_args": {"check_same_thread": False}} if url.startswith("sqlite") else {}
     if url in ("sqlite://", "sqlite:///:memory:"):
@@ -42,7 +35,6 @@ def nuevaSesion() -> Session:
 
 
 def obtenerSesion() -> Iterator[Session]:
-    """Dependencia de FastAPI: una sesión por petición."""
     sesion = nuevaSesion()
     try:
         yield sesion

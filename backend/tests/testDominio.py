@@ -1,5 +1,3 @@
-"""Pruebas del dominio: carga de la red, validación y construcción de la instancia."""
-
 import pytest
 
 from app.dominio.instancia import InstanciaBuilder, InstanciaTransporte

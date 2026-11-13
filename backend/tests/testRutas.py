@@ -1,5 +1,3 @@
-"""Pruebas del trazado por carretera (sin internet: el servicio web se reemplaza por uno falso)."""
-
 import json
 
 import pytest
@@ -32,7 +30,6 @@ class RepositorioFalso:
 
 
 def paresTrazables(red) -> int:
-    """Pares con coordenadas distintas (en el mismo municipio no hay nada que trazar)."""
     return sum(1 for a in red.agroempresas for p in red.plantas if (a.lat, a.lon) != (p.lat, p.lon))
 
 

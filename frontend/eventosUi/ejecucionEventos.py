@@ -1,5 +1,3 @@
-"""Eventos de la pantalla Despacho: ejecutar la comparación del método exacto contra el AG."""
-
 import streamlit as st
 
 from clienteApi.cliente import ErrorApi

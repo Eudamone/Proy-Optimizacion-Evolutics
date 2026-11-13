@@ -1,13 +1,4 @@
-"""InstanciaTransporte: el problema de transporte listo para resolver.
-
-    min Z = sum_i sum_j c_ij x_ij
-    sujeto a  sum_j x_ij = a_i   (cada agroempresa despacha toda su oferta)
-              sum_i x_ij <= b_j  (cada planta respeta su capacidad)
-              x_ij >= 0
-
-InstanciaBuilder arma la instancia desde la red con c_ij = d_ij * tarifa + costo_operacion_j.
-Una ruta deshabilitada cuesta Gran M y una planta inactiva queda con b_j = 0.
-"""
+# c_ij = d_ij * tarifa + costo de operación; ruta bloqueada = Gran M, planta inactiva = b_j 0.
 
 from dataclasses import dataclass, field, replace
 from typing import Optional
@@ -27,19 +18,16 @@ class InstanciaTransporte:
     ficticia: Optional[str] = None  # "fila" o "columna" si el balanceador agregó una
 
     def n(self) -> int:
-        """Número de fuentes (filas)."""
         return len(self.fuentes)
 
     def m(self) -> int:
-        """Número de plantas (columnas)."""
         return len(self.plantas)
 
     def costo(self, x: Matriz) -> float:
-        """Z = sum c_ij x_ij."""
         return sum(self.C[i][j] * x[i][j] for i in range(self.n()) for j in range(self.m()))
 
     def verificar(self, x: Matriz, tolerancia: float = 1e-6) -> list[str]:
-        """Revisa que x cumpla todas las restricciones. Lista vacía = factible."""
+        """Revisa que x cumpla las restricciones; lista vacía = factible."""
         if len(x) != self.n() or any(len(fila) != self.m() for fila in x):
             return [f"La matriz x debe ser de {self.n()} x {self.m()}."]
 
@@ -66,7 +54,6 @@ class InstanciaTransporte:
         return errores
 
     def conCambios(self, **cambios) -> "InstanciaTransporte":
-        """Copia independiente con algunos campos cambiados (para escenarios)."""
         copia = replace(
             self,
             fuentes=list(self.fuentes),

@@ -1,5 +1,3 @@
-"""ICruce, CruceUnPunto y CruceDosPuntos (los hijos intercambian segmentos de genes)."""
-
 from abc import ABC, abstractmethod
 
 from app.genetico.aleatorio import GeneradorAleatorio
@@ -9,7 +7,7 @@ from app.genetico.cromosoma import Cromosoma
 class ICruce(ABC):
     @abstractmethod
     def cruzar(self, a: Cromosoma, b: Cromosoma) -> tuple[Cromosoma, Cromosoma]:
-        """Devuelve dos hijos nuevos; los padres no se modifican."""
+        ...
 
 
 class CruceUnPunto(ICruce):

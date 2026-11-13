@@ -1,8 +1,3 @@
-"""Esquemas de sensibilidad y escenarios.
-
-Los límites infinitos de un rango se envían como null.
-"""
-
 import math
 from typing import Optional
 

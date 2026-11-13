@@ -1,9 +1,3 @@
-"""Inyección de dependencias (Depends): raíz de composición de la API.
-
-Aquí, y solo aquí, se eligen las clases concretas: una sesión por petición y,
-con ella, los repositorios, el solver, el validador y los servicios.
-"""
-
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
@@ -30,7 +24,6 @@ proveedorRutas = ProveedorOsrm()
 
 
 def serializarComparacion(comparacion, inst) -> dict:
-    """Detalle que se guarda con cada comparación: el mismo JSON que devuelve la API."""
     return comparacionADto(comparacion, inst).model_dump(mode="json")
 
 

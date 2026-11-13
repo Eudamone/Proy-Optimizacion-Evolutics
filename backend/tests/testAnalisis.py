@@ -1,9 +1,3 @@
-"""Pruebas de sensibilidad, escenarios y comparador.
-
-Los precios sombra y los rangos se comprueban volviendo a resolver el problema
-con el dato cambiado: el resultado debe coincidir con lo que predice el análisis.
-"""
-
 import math
 
 import pytest

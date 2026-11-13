@@ -1,5 +1,3 @@
-"""Pruebas del AG: decodificación, aptitud, operadores y reproducibilidad con semilla."""
-
 import pytest
 
 from app.dominio.instancia import InstanciaTransporte

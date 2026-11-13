@@ -1,9 +1,3 @@
-"""ServicioSensibilidad: resuelve la red actual con el método exacto, calcula la
-sensibilidad y, si se pide, simula un escenario.
-
-Recibe todas sus dependencias ya creadas (las arma dependencias.py).
-"""
-
 from typing import Optional
 
 from app.analisis.escenarios import MODIFICADORES, Escenario, SimuladorEscenarios, TipoEscenario
@@ -26,10 +20,7 @@ class ServicioSensibilidad:
         self.builder = builder
 
     def analizar(self, escenario: Optional[dict] = None):
-        """Devuelve (red, instancia, solucion, resultado, pasos del escenario o None).
-
-        escenario: {"tipo", "objetivo_id", "delta_min", "delta_max", "pasos"}
-        """
+        """Devuelve (red, instancia, solución, resultado, pasos del escenario o None)."""
         red = self.repositorioRed.obtenerRed()
         errores = self.validador.validar(red)
         if errores:

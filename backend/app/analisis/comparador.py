@@ -1,8 +1,4 @@
-"""Comparador: resuelve con el método exacto una vez y con el AG varias veces
-(una semilla por corrida) y resume costo, tiempo y gap %.
-
-    gap % = (Z_AG - Z*) / Z* * 100
-"""
+# Exacto una vez contra varias corridas del AG; gap % = (Z_AG - Z*) / Z* * 100.
 
 import statistics
 from dataclasses import dataclass, field, replace
@@ -26,7 +22,6 @@ class Comparacion:
     mejor_genetica: Solucion = None
 
     def gapPct(self) -> float:
-        """Gap del mejor resultado del AG frente al óptimo."""
         return self._gap(self.z_ag_mejor)
 
     def gapPromedioPct(self) -> float:

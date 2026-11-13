@@ -1,10 +1,4 @@
-"""Solucion: resultado común de cualquier método sobre una instancia.
-
-Cada método agrega lo que solo él produce:
-  - SolucionExacta: la información dual del tablero óptimo (la necesita la sensibilidad).
-  - SolucionGenetica: el historial de convergencia.
-Así, quien necesita los duales pide una SolucionExacta y el contrato queda en el tipo.
-"""
+# SolucionExacta agrega los duales (para sensibilidad) y SolucionGenetica el historial.
 
 from dataclasses import dataclass
 from typing import Any
@@ -22,7 +16,6 @@ class Solucion:
     factible: bool = True
 
     def flujos(self, fuentes: list[str], plantas: list[str], minimo: float = 1e-9) -> list[tuple[str, str, float]]:
-        """Rutas usadas como (fuente, planta, toneladas), de mayor a menor."""
         rutas = [
             (fuentes[i], plantas[j], self.x[i][j])
             for i in range(len(fuentes))

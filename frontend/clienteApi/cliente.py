@@ -1,8 +1,3 @@
-"""Clientes de la API: una interfaz pequeña por área (red, optimización,
-sensibilidad y reportes) y HttpApiClient, que las implementa con httpx y JSON.
-La URL se cambia con la variable ECORESIDUOS_API.
-"""
-
 import os
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -14,8 +9,6 @@ URL_API = os.getenv("ECORESIDUOS_API", "http://127.0.0.1:8000")
 
 
 class ErrorApi(Exception):
-    """Error que se muestra tal cual al analista: dice qué pasó y cómo seguir."""
-
     def __init__(self, errores: list[str]):
         super().__init__("; ".join(errores))
         self.errores = errores
@@ -60,8 +53,6 @@ class IReportesApi(ABC):
 
 
 class HttpApiClient(IRedApi, IOptimizacionApi, ISensibilidadApi, IReportesApi):
-    """Una sola conexión HTTP; cada pantalla la ve solo a través de la interfaz que necesita."""
-
     def __init__(self, urlBase: str = URL_API, tiempoMaximo: float = 300):
         self.urlBase = urlBase.rstrip("/")
         self.tiempoMaximo = tiempoMaximo

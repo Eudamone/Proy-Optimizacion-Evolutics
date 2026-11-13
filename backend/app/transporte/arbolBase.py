@@ -1,12 +1,4 @@
-"""ArbolBase: la base de la tabla vista como un árbol.
-
-Los nodos son las filas ('u', i) y las columnas ('v', j); cada celda básica (i, j)
-es una arista entre ('u', i) y ('v', j). Con n + m - 1 celdas básicas sin ciclos,
-el grafo es un árbol: entre dos nodos hay exactamente un camino.
-
-Lo usan MODI (potenciales y ciclo de la celda entrante) y el análisis de
-sensibilidad (rangos de costos y de oferta/capacidad).
-"""
+# La base como árbol: filas y columnas son nodos y cada celda básica una arista.
 
 from collections import deque
 
@@ -43,7 +35,6 @@ class ArbolBase:
         return u, v
 
     def camino(self, origen: Nodo, destino: Nodo) -> list[Nodo]:
-        """Nodos del único camino del árbol entre origen y destino (incluidos)."""
         anterior = {origen: None}
         cola = deque([origen])
         while cola:
@@ -63,7 +54,6 @@ class ArbolBase:
 
     @staticmethod
     def celdasDelCamino(nodos: list[Nodo]) -> list[Celda]:
-        """Convierte un camino de nodos en las celdas básicas que recorre."""
         celdas = []
         for a, b in zip(nodos, nodos[1:]):
             fila = a[1] if a[0] == "u" else b[1]
@@ -72,11 +62,7 @@ class ArbolBase:
         return celdas
 
     def ciclo(self, entrante: Celda) -> list[tuple[Celda, int]]:
-        """Ciclo de la celda entrante con sus signos: [((i, j), +1), (celda, -1), ...].
-
-        El ciclo es la celda entrante más el camino del árbol que une su columna con su fila.
-        Los signos se alternan empezando con + en la celda entrante.
-        """
+        """Celda entrante + camino del árbol entre su columna y su fila, con signos alternados desde +."""
         i, j = entrante
         celdas = self.celdasDelCamino(self.camino(("v", j), ("u", i)))
         ciclo = [(entrante, +1)]

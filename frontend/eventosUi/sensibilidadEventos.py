@@ -1,5 +1,3 @@
-"""Eventos de la pantalla Qué pasa si…: simular un escenario."""
-
 import streamlit as st
 
 from clienteApi.cliente import ErrorApi

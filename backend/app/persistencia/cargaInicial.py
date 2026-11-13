@@ -1,9 +1,3 @@
-"""Carga los datos de prueba de backend/datos/semilla.
-
-cargarRedSemilla() arma la RedLogistica desde los CSV y el JSON, y
-cargarSiVacia() la guarda en la base cuando todavía no tiene datos.
-"""
-
 import csv
 import json
 from pathlib import Path
@@ -29,7 +23,6 @@ def _aFloatOpcional(valor: Optional[str]) -> Optional[float]:
 
 
 def cargarRedSemilla(carpeta: Optional[Path] = None) -> RedLogistica:
-    """Lee agroempresas.csv, plantas.csv, distancias.csv y parametros.json."""
     carpeta = Path(carpeta) if carpeta else CARPETA_SEMILLA
 
     agroempresas = [
@@ -77,7 +70,7 @@ def cargarRedSemilla(carpeta: Optional[Path] = None) -> RedLogistica:
 
 
 def cargarSiVacia(sesion) -> bool:
-    """Guarda la red de prueba si la base no tiene agroempresas. Devuelve True si cargó."""
+    """Guarda la red de prueba si la base está vacía; devuelve True si cargó."""
     from app.persistencia.repositorios.redRepository import RedRepository
 
     repositorio = RedRepository(sesion)

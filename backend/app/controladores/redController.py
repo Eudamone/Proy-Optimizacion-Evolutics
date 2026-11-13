@@ -1,5 +1,3 @@
-"""RedController: consultar, actualizar y restablecer la red logística."""
-
 from fastapi import APIRouter, Depends
 
 from app.dependencias import obtenerServicioRed, obtenerServicioRutas
@@ -25,8 +23,7 @@ def obtenerResumen(servicio: ServicioRed = Depends(obtenerServicioRed)):
 @router.get("/rutas-carretera", response_model=RutasCarreteraDTO,
             summary="Trazado por carretera de cada agroempresa a cada planta (para el mapa)")
 def obtenerRutasCarretera(descargar: bool = False, servicio: ServicioRutas = Depends(obtenerServicioRutas)):
-    """Devuelve los trazados guardados. Con descargar=true pide al servicio web OSRM los que
-    falten (unos segundos por ruta) y los guarda; sin internet marca sin_conexion."""
+    """Con descargar=true pide a OSRM los trazados que falten y los guarda."""
     return rutasCarreteraADto(servicio.rutasDeLaRed(descargar=descargar), FUENTE)
 
 

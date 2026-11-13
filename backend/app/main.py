@@ -1,9 +1,4 @@
-"""Aplicación FastAPI (capa de lógica).
-
-Al iniciar prepara la base SQLite y, si está vacía, carga los datos de prueba.
-Ejecutar desde la carpeta backend:  uvicorn app.main:app --reload
-Documentación interactiva:          http://localhost:8000/docs
-"""
+# Ejecutar desde backend: uvicorn app.main:app --reload
 
 from contextlib import asynccontextmanager
 from typing import Optional

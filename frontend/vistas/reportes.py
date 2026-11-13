@@ -1,5 +1,3 @@
-"""Pantalla "Reportes": historial de comparaciones, su detalle y descarga en CSV."""
-
 import pandas as pd
 import streamlit as st
 

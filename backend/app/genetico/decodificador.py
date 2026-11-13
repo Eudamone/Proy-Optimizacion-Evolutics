@@ -1,11 +1,4 @@
-"""Decodificador: convierte los genes en toneladas.
-
-    x_ij = a_i * g_ij / sum_k g_ik
-
-Así cada agroempresa siempre despacha toda su oferta. Las rutas bloqueadas
-(costo Gran M) y las plantas con capacidad 0 reciben peso 0. La capacidad de
-las plantas sí se puede exceder: eso lo castiga la aptitud.
-"""
+# Genes a toneladas: x_ij = a_i * g_ij / sum_k g_ik, así cada agroempresa despacha toda su oferta.
 
 from app.dominio.instancia import InstanciaTransporte
 from app.dominio.tipos import Matriz
@@ -34,7 +27,6 @@ class Decodificador:
 
     @staticmethod
     def exceso(x: Matriz, inst: InstanciaTransporte) -> float:
-        """Toneladas que superan la capacidad, sumadas sobre todas las plantas."""
         return sum(
             max(0.0, sum(x[i][j] for i in range(inst.n())) - inst.b[j])
             for j in range(inst.m())

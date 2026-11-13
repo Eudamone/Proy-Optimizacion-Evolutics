@@ -1,9 +1,3 @@
-"""ServicioRutas: trazado por carretera de cada par agroempresa -> planta para el mapa.
-
-Primero busca en la caché; si se pide descargar, lo que falte lo consulta al servicio
-web (OSRM) y guarda lo nuevo. Sin internet devuelve lo que haya en la caché.
-"""
-
 import math
 import time
 from dataclasses import dataclass, field
@@ -48,8 +42,6 @@ class ServicioRutas:
 
     def rutasDeLaRed(self, red: Optional[RedLogistica] = None, descargar: bool = True,
                      alAvanzar=None) -> ResultadoRutas:
-        """descargar=False solo lee la caché (rápido). alAvanzar(hechas, total) se llama tras
-        cada consulta al servicio web (para la descarga por consola)."""
         red = red or self.repositorio.obtenerRed()
         pares = [(a, p) for a in red.agroempresas for p in red.plantas
                  if None not in (a.lat, a.lon, p.lat, p.lon)
