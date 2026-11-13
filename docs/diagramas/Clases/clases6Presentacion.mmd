@@ -1,0 +1,57 @@
+%% Capa de presentación (Streamlit)
+classDiagram
+  direction LR
+  class ErrorApi {
+    +list~str~ errores
+  }
+  class IRedApi {
+    <<interface>>
+    +obtenerRed() dict
+    +obtenerResumen() dict
+    +guardarRed(red) dict
+    +restablecerRed() dict
+    +rutasCarretera(descargar) dict
+  }
+  class IOptimizacionApi {
+    <<interface>>
+    +resolver(metodo, parametros) dict
+    +comparar(parametros, corridas) dict
+  }
+  class ISensibilidadApi {
+    <<interface>>
+    +sensibilidad(escenario) dict
+  }
+  class IReportesApi {
+    <<interface>>
+    +listarReportes() list~dict~
+    +obtenerReporte(id) dict
+  }
+  class HttpApiClient {
+    +str urlBase
+    +float tiempoMaximo
+    -_pedir(metodo, ruta, cuerpo)
+  }
+  class EstadoUI {
+    +dict redEditada
+    +int versionTablas
+    +dict ultimaComparacion
+    +dict ultimoEscenario
+    +list~str~ errores
+    +str aviso
+    +enCache(clave, calcular)
+    +red() dict
+    +solucionExacta() dict
+    +sensibilidadBase() dict
+    +rutasCarretera() dict
+    +hayInternet() bool
+    +redCambio()
+  }
+  IRedApi <|.. HttpApiClient
+  IOptimizacionApi <|.. HttpApiClient
+  ISensibilidadApi <|.. HttpApiClient
+  IReportesApi <|.. HttpApiClient
+  HttpApiClient ..> ErrorApi : lanza
+  EstadoUI --> IRedApi
+  EstadoUI --> IOptimizacionApi
+  EstadoUI --> ISensibilidadApi
+  EstadoUI --> IReportesApi

@@ -1,0 +1,136 @@
+%% Análisis: sensibilidad, escenarios y comparador
+classDiagram
+  direction LR
+  class AnalizadorSensibilidad {
+    +analizar(sol, inst) ResultadoSensibilidad
+  }
+  class ResultadoSensibilidad {
+    +list~float~ precio_sombra_oferta
+    +list~float~ precio_sombra_capacidad
+    +Matriz costos_reducidos
+    +dict rangos_costo
+    +list~Rango~ rangos_oferta
+    +list~Rango~ rangos_capacidad
+    +ahorroPorCapacidad() list~float~
+  }
+  class Rango {
+    +float actual
+    +float minimo
+    +float maximo
+    +contiene(valor) bool
+  }
+  class TipoEscenario {
+    <<enumeration>>
+    COSTO_TRANSPORTE
+    OFERTA
+    CAPACIDAD
+    CIERRE_PLANTA
+  }
+  class Escenario {
+    +TipoEscenario tipo
+    +int objetivo
+    +float delta_min
+    +float delta_max
+    +int pasos
+    +deltas() list~float~
+    +aplicar(inst, delta) InstanciaTransporte
+  }
+  class IModificador {
+    <<interface>>
+    +bool unPasoSolo
+    +bool sobreFuentes
+    +aplicar(inst, indices, factor)
+  }
+  class ModificadorCostoTransporte {
+    +aplicar(inst, indices, factor)
+  }
+  class ModificadorOferta {
+    +bool sobreFuentes = true
+    +aplicar(inst, indices, factor)
+  }
+  class ModificadorCapacidad {
+    +aplicar(inst, indices, factor)
+  }
+  class ModificadorCierrePlanta {
+    +bool unPasoSolo = true
+    +aplicar(inst, indices, factor)
+  }
+  class PasoEscenario {
+    +float delta
+    +float costo_total
+    +bool cambia_base
+    +bool factible
+    +str mensaje
+  }
+  class SimuladorEscenarios {
+    +simular(inst, esc) list~PasoEscenario~
+  }
+  class Comparador {
+    +comparar(inst, p, corridas) Comparacion
+  }
+  class Comparacion {
+    +float z_exacto
+    +float z_ag_mejor
+    +float z_ag_promedio
+    +float desv_estandar
+    +dict tiempos
+    +list~float~ costos_ag
+    +list~int~ semillas
+    +Solucion solucion_exacta
+    +Solucion mejor_genetica
+    +gapPct() float
+    +gapPromedioPct() float
+    +gapsPorCorrida() list~float~
+  }
+  class ISolver {
+    <<interface>>
+    +nombre() str
+    +resolver(inst) Solucion
+  }
+  class SolverFactory {
+    -dict _creadores
+    +registrar(metodo, creador)
+    +metodos() list~str~
+    +crear(metodo, parametros) ISolver
+    +exacto() ISolver
+    +genetico(parametros) ISolver
+  }
+  class SolucionExacta {
+    +str metodo
+    +Matriz x
+    +float costo_total
+    +float tiempo_s
+    +int iteraciones
+    +bool factible
+    +InfoDual dual
+    +flujos(fuentes, plantas) list
+  }
+  class ParametrosAG {
+    +int poblacion
+    +int generaciones
+    +float p_cruce
+    +float p_mutacion
+    +int elitismo
+    +int k_torneo
+    +float lambda_
+    +str seleccion
+    +str cruce
+    +str mutacion
+    +int semilla
+    +validar() list~str~
+  }
+  AnalizadorSensibilidad ..> SolucionExacta
+  AnalizadorSensibilidad ..> ResultadoSensibilidad : crea
+  ResultadoSensibilidad "1" *-- "0..*" Rango
+  Escenario --> TipoEscenario
+  Escenario ..> IModificador : MODIFICADORES
+  IModificador <|.. ModificadorCostoTransporte
+  IModificador <|.. ModificadorOferta
+  IModificador <|.. ModificadorCapacidad
+  IModificador <|.. ModificadorCierrePlanta
+  SimuladorEscenarios o-- ISolver
+  SimuladorEscenarios ..> Escenario
+  SimuladorEscenarios ..> PasoEscenario : crea
+  Comparador o-- SolverFactory
+  Comparador ..> ParametrosAG
+  Comparador ..> Comparacion : crea

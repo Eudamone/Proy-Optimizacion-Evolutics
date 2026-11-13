@@ -1,0 +1,129 @@
+%% Algoritmo genético
+classDiagram
+  direction TB
+  class ISolver {
+    <<interface>>
+    +nombre() str
+    +resolver(inst) Solucion
+  }
+  class AlgoritmoGeneticoSolver {
+    +ParametrosAG params
+    +HistorialConvergencia historial
+    +nombre() str
+    +resolver(inst) SolucionGenetica
+  }
+  class ParametrosAG {
+    +int poblacion
+    +int generaciones
+    +float p_cruce
+    +float p_mutacion
+    +int elitismo
+    +int k_torneo
+    +float lambda_
+    +str seleccion
+    +str cruce
+    +str mutacion
+    +int semilla
+    +validar() list~str~
+  }
+  class Cromosoma {
+    +list~float~ genes
+    +float costo
+    +float exceso
+    +float aptitud
+    +copiar() Cromosoma
+    +penalizado(lambda_) float
+  }
+  class Poblacion {
+    +list~Cromosoma~ individuos
+    +ordenar()
+    +mejor() Cromosoma
+    +costoPromedio() float
+  }
+  class GeneradorAleatorio {
+    +int semilla
+    +uniforme() float
+    +entero(a, b) int
+    +muestra(items, k) list
+  }
+  class Decodificador {
+    +decodificar(c, inst) Matriz
+    +exceso(x, inst) float
+  }
+  class FitnessPenalizado {
+    +float lambda_
+    +lambdaPara(inst) float
+    +evaluar(c, inst) float
+  }
+  class HistorialConvergencia {
+    +list~float~ mejor_costo
+    +list~float~ costo_promedio
+    +list~float~ mejor_exceso
+    +registrar(pob)
+    +generaciones() int
+  }
+  class ISeleccion {
+    <<interface>>
+    +seleccionar(pob) Cromosoma
+  }
+  class SeleccionTorneo {
+    +GeneradorAleatorio rng
+    +int k
+    +seleccionar(pob) Cromosoma
+  }
+  class SeleccionRuleta {
+    +GeneradorAleatorio rng
+    +seleccionar(pob) Cromosoma
+  }
+  class ICruce {
+    <<interface>>
+    +cruzar(a, b) tuple
+  }
+  class CruceUnPunto {
+    +GeneradorAleatorio rng
+    +cruzar(a, b) tuple
+  }
+  class CruceDosPuntos {
+    +GeneradorAleatorio rng
+    +cruzar(a, b) tuple
+  }
+  class IMutacion {
+    <<interface>>
+    +mutar(c)
+  }
+  class MutacionUniforme {
+    +GeneradorAleatorio rng
+    +float prob
+    +mutar(c)
+  }
+  class MutacionPoda {
+    +GeneradorAleatorio rng
+    +float prob
+    +mutar(c)
+  }
+  ISolver <|.. AlgoritmoGeneticoSolver
+  AlgoritmoGeneticoSolver o-- ParametrosAG
+  AlgoritmoGeneticoSolver o-- GeneradorAleatorio
+  AlgoritmoGeneticoSolver o-- Decodificador
+  AlgoritmoGeneticoSolver o-- FitnessPenalizado
+  AlgoritmoGeneticoSolver o-- ISeleccion
+  AlgoritmoGeneticoSolver o-- ICruce
+  AlgoritmoGeneticoSolver o-- IMutacion
+  AlgoritmoGeneticoSolver *-- HistorialConvergencia
+  AlgoritmoGeneticoSolver ..> Poblacion
+  Poblacion "1" o-- "2..*" Cromosoma
+  FitnessPenalizado --> Decodificador
+  FitnessPenalizado ..> Cromosoma
+  ISeleccion <|.. SeleccionTorneo
+  ISeleccion <|.. SeleccionRuleta
+  ICruce <|.. CruceUnPunto
+  ICruce <|.. CruceDosPuntos
+  IMutacion <|.. MutacionUniforme
+  IMutacion <|.. MutacionPoda
+  SeleccionTorneo --> GeneradorAleatorio
+  SeleccionRuleta --> GeneradorAleatorio
+  CruceUnPunto --> GeneradorAleatorio
+  CruceDosPuntos --> GeneradorAleatorio
+  MutacionUniforme --> GeneradorAleatorio
+  MutacionPoda --> GeneradorAleatorio
+  HistorialConvergencia ..> Poblacion

@@ -1,0 +1,120 @@
+%% Dominio y motores
+classDiagram
+  direction LR
+  class TipoResiduo {
+    <<enumeration>>
+    PALMA
+    ARROZ
+    GANADERIA
+    AGRICOLA
+    FORESTAL
+  }
+  class Agroempresa {
+    +str id
+    +str nombre
+    +str municipio
+    +TipoResiduo tipo_residuo
+    +float oferta_t
+    +float lat
+    +float lon
+  }
+  class Planta {
+    +str id
+    +str nombre
+    +str municipio
+    +float capacidad_t
+    +float costo_operacion
+    +bool activa
+    +float lat
+    +float lon
+  }
+  class Ruta {
+    +str agroempresa_id
+    +str planta_id
+    +float distancia_km
+    +bool habilitada
+  }
+  class ParametrosEconomicos {
+    +float tarifa_t_km
+    +float precio_tonelada
+    +float gran_m
+  }
+  class RedLogistica {
+    +list~Agroempresa~ agroempresas
+    +list~Planta~ plantas
+    +list~Ruta~ rutas
+    +ParametrosEconomicos parametros
+    +agroempresa(id) Agroempresa
+    +planta(id) Planta
+    +ruta(aId, pId) Ruta
+    +totalOferta() float
+    +totalCapacidad() float
+    +plantasActivas() list~Planta~
+    +agregarAgroempresa(a, distancias)
+    +agregarPlanta(p, distancias)
+    +quitarAgroempresa(id)
+    +quitarPlanta(id)
+  }
+  class ValidadorRed {
+    +float tolerancia
+    +validar(red) list~str~
+  }
+  class InstanciaTransporte {
+    +list~str~ fuentes
+    +list~str~ plantas
+    +list~float~ a
+    +list~float~ b
+    +Matriz C
+    +float gran_m
+    +str ficticia
+    +n() int
+    +m() int
+    +costo(x) float
+    +verificar(x) list~str~
+    +conCambios() InstanciaTransporte
+  }
+  class InstanciaBuilder {
+    +construir(red) InstanciaTransporte
+  }
+  class Solucion {
+    +str metodo
+    +Matriz x
+    +float costo_total
+    +float tiempo_s
+    +int iteraciones
+    +bool factible
+    +flujos(fuentes, plantas) list
+  }
+  class SolucionExacta {
+    +InfoDual dual
+  }
+  class SolucionGenetica {
+    +HistorialConvergencia historial
+  }
+  class ISolver {
+    <<interface>>
+    +nombre() str
+    +resolver(inst) Solucion
+  }
+  class SolverFactory {
+    +registrar(metodo, creador)
+    +metodos() list~str~
+    +crear(metodo, parametros) ISolver
+    +exacto() ISolver
+    +genetico(parametros) ISolver
+  }
+  RedLogistica "1" *-- "1..*" Agroempresa
+  RedLogistica "1" *-- "1..*" Planta
+  RedLogistica "1" *-- "0..*" Ruta
+  RedLogistica "1" *-- "1" ParametrosEconomicos
+  Agroempresa --> TipoResiduo
+  Ruta ..> Agroempresa : agroempresa_id
+  Ruta ..> Planta : planta_id
+  ValidadorRed ..> RedLogistica
+  InstanciaBuilder ..> RedLogistica
+  InstanciaBuilder ..> InstanciaTransporte : crea
+  Solucion <|-- SolucionExacta
+  Solucion <|-- SolucionGenetica
+  ISolver ..> InstanciaTransporte
+  ISolver ..> Solucion
+  SolverFactory ..> ISolver : crea

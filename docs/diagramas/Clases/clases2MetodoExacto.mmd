@@ -1,0 +1,99 @@
+%% Método exacto (Vogel + MODI)
+classDiagram
+  direction LR
+  class ISolver {
+    <<interface>>
+    +nombre() str
+    +resolver(inst) Solucion
+  }
+  class SolverTransporte {
+    +nombre() str
+    +resolver(inst) SolucionExacta
+  }
+  class Balanceador {
+    +float tolerancia
+    +balancear(inst) InstanciaTransporte
+    +quitarFicticia(tabla) Matriz
+  }
+  class ISolucionInicial {
+    <<interface>>
+    +construir(inst) TablaTransporte
+  }
+  class MetodoVogel {
+    +float tolerancia
+    +construir(inst) TablaTransporte
+    +penalizaciones(inst, filas, columnas)
+  }
+  class TablaTransporte {
+    +InstanciaTransporte inst
+    +Matriz x
+    +set~Celda~ basicas
+    +asignar(i, j, cantidad)
+    +costo() float
+    +numeroBasicasRequeridas() int
+    +completarBase()
+  }
+  class MetodoMODI {
+    +float tolerancia
+    +int maxIteraciones
+    +optimizar(tabla) InfoDual
+    +costosReducidos(C, u, v, basicas) Matriz
+    +pivotear(tabla, ciclo)
+  }
+  class InfoDual {
+    +list~float~ u
+    +list~float~ v
+    +Matriz d
+    +set~Celda~ basicas
+    +Matriz x
+    +int filaReferencia
+    +int iteraciones
+    +float costoInicial
+    +list~float~ historialCostos
+  }
+  class ArbolBase {
+    +int n
+    +int m
+    +potenciales(C, filaReferencia) tuple
+    +camino(origen, destino) list~Nodo~
+    +celdasDelCamino(nodos) list~Celda~
+    +ciclo(entrante) list
+  }
+  class InstanciaTransporte {
+    +list~str~ fuentes
+    +list~str~ plantas
+    +list~float~ a
+    +list~float~ b
+    +Matriz C
+    +float gran_m
+    +str ficticia
+    +n() int
+    +m() int
+    +costo(x) float
+    +verificar(x) list~str~
+    +conCambios() InstanciaTransporte
+  }
+  class SolucionExacta {
+    +str metodo
+    +Matriz x
+    +float costo_total
+    +float tiempo_s
+    +int iteraciones
+    +bool factible
+    +InfoDual dual
+    +flujos(fuentes, plantas) list
+  }
+  ISolver <|.. SolverTransporte
+  SolverTransporte o-- ISolucionInicial
+  SolverTransporte o-- Balanceador
+  SolverTransporte o-- MetodoMODI
+  ISolucionInicial <|.. MetodoVogel
+  MetodoVogel ..> TablaTransporte : crea
+  TablaTransporte --> InstanciaTransporte
+  Balanceador ..> InstanciaTransporte
+  Balanceador ..> TablaTransporte
+  MetodoMODI ..> TablaTransporte
+  MetodoMODI ..> ArbolBase
+  MetodoMODI ..> InfoDual : crea
+  SolverTransporte ..> SolucionExacta : crea
+  SolucionExacta --> InfoDual
